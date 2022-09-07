@@ -13,7 +13,7 @@ This module creates basic Azure resources that are foundational to environment s
   - flowlogs
   - monitor logs
   - installer files
-  - terraform remote state
+  - Terraform remote state
 - A stopinator Azure function - Not ported yet
 
 ## Stopinator Details

@@ -2,11 +2,11 @@
 
 ## v1.0.0 - 2022-09-06
 
-## Description
+### Description
 
 This module creates basic Azure resources that are foundational to environment set up.
 
-## Resource List
+### Resource List
 
 - Azure Monitor
 - Storage Account Blob and Container for terraform remote state lock
@@ -18,7 +18,7 @@ This module creates basic Azure resources that are foundational to environment s
   - Terraform remote state
 - A stopinator Azure function - Not ported yet
 
-## Stopinator Details
+### Stopinator Details
 
  The stopinator Azure function created within this module is triggered every 5 minutes.  Instances that should be stopped should have the following tags:
 
@@ -26,7 +26,7 @@ This module creates basic Azure resources that are foundational to environment s
 - stop_time:  The time (24 hour format) that the instance should be stopped
 - stop_weekend: If this tag is added, the instance will be stopped during the weekend
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
@@ -40,7 +40,7 @@ This module creates basic Azure resources that are foundational to environment s
 | diag_log_analytics_id | ID of the Log Analytics Workspace diagnostic logs should be sent to | string | N/A | yes |
 | additional_resource_groups | Additional resource groups to create | list(string) | [] | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

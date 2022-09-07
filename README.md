@@ -1,4 +1,4 @@
-# Coalfire Region Setup Module
+# Coalfire Azure Region Setup Module
 
 ## Description
 

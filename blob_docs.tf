@@ -51,7 +51,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_docs_cmk" {
 }
 
 module "diag_docs_sa" {
-  source                = "../coalfire-diagnostic/"
+  source                = "git@github.com:Coalfire-CF/ACE-Azure-Diagnostics.git?ref=v1.0.1"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.docs_sa.id
   resource_type         = "sa"

@@ -58,24 +58,25 @@ resource "azurerm_storage_account_customer_managed_key" "enable_install_blob_cmk
   ]
 }
 
-resource "azurerm_storage_blob" "linb_domainjoin" {
-  name                   = "ud_linux_join_ad.sh"
-  storage_account_name   = azurerm_storage_account.install_blob.name
-  storage_container_name = "shellscripts"
-  type                   = "Block"
-  source                 = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
-}
+# Commenting out till we decide on a direction for where to store shell scripts
+# resource "azurerm_storage_blob" "linb_domainjoin" {
+#   name                   = "ud_linux_join_ad.sh"
+#   storage_account_name   = azurerm_storage_account.install_blob.name
+#   storage_container_name = "shellscripts"
+#   type                   = "Block"
+#   source                 = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
+# }
 
-resource "azurerm_storage_blob" "linb_monitor_agent" {
-  name                   = "ud_linux_monitor_agent.sh"
-  storage_account_name   = azurerm_storage_account.install_blob.name
-  storage_container_name = "shellscripts"
-  type                   = "Block"
-  source                 = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
-}
+# resource "azurerm_storage_blob" "linb_monitor_agent" {
+#   name                   = "ud_linux_monitor_agent.sh"
+#   storage_account_name   = azurerm_storage_account.install_blob.name
+#   storage_container_name = "shellscripts"
+#   type                   = "Block"
+#   source                 = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
+# }
 
 module "diag_install_blob_sa" {
-  source                = "../coalfire-diagnostic/"
+  source                = "git@github.com:Coalfire-CF/ACE-Azure-Diagnostics.git?ref=v1.0.1"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.install_blob.id
   resource_type         = "sa"

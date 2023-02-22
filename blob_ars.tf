@@ -55,7 +55,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_ars_cmk" {
 # note: see - https://github.com/hashicorp/terraform-provider-azurerm/issues/8275 
 # for why the target resource ID has different different settings
 module "diag_ars_sa" {
-  source                = "git@github.com:Coalfire-CF/ACE-Azure-Diagnostics.git?ref=v1.0.1"
+  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics?ref=latest"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.ars_sa.id
   resource_type         = "sa"

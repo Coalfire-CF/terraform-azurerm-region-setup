@@ -52,7 +52,7 @@ data "azurerm_storage_account_sas" "vm_diag_sas" {
 }
 
 module "diag_vm_diag_sa" {
-  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics?ref=releases/latest"
+  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.vm_diag.id
   resource_type         = "sa"

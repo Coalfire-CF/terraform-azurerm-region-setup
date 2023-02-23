@@ -46,14 +46,6 @@ output "storage_account_vmdiag_name" {
   value = azurerm_storage_account.vm_diag.name
 }
 
-# output "storage_account_elksnapshots_id" {
-#   value = azurerm_storage_account.elk_snapshots.id
-# }
-
-# output "storage_account_elksnapshots_name" {
-#   value = azurerm_storage_account.elk_snapshots.name
-# }
-
 output "storage_account_vm_diag_sas" {
   sensitive = true
   value     = data.azurerm_storage_account_sas.vm_diag_sas.sas
@@ -89,13 +81,6 @@ output "storage_account_ars_name" {
 
 # output "storage_account_tfstate_name" {
 #   value = azurerm_storage_account.tf_state.name
-# }
-
-# output "eventhub_name" {
-#   value = azurerm_eventhub_namespace.monitoring_ehns.name
-# }
-# output "eventhub_auth_id" {
-#   value = azurerm_eventhub_namespace_authorization_rule.subscription_rule.id
 # }
 
 output "management_rg_name" {

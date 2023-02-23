@@ -75,7 +75,7 @@ resource "azurerm_storage_blob" "linb_monitor_agent" {
 }
 
 module "diag_install_blob_sa" {
-  source                = "../coalfire-diagnostic/"
+  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.install_blob.id
   resource_type         = "sa"

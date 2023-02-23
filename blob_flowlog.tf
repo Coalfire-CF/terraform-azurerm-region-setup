@@ -46,7 +46,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_flowlogs_cmk" {
 }
 
 module "diag_flowlogs_sa" {
-  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics?ref=latest"
+  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics?ref=releases/latest"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.flowlogs.id
   resource_type         = "sa"

@@ -1,8 +1,6 @@
 # Coalfire Azure Region Setup Module
 
-## v1.0.0 - 2022-09-06
-
-### Description
+## Description
 
 This module creates basic Azure resources that are foundational to environment set up.
 

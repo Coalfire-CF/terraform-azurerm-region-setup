@@ -107,13 +107,13 @@ output "network_watcher_name" {
   value = azurerm_network_watcher.fr_network_watcher.name
 }
 
-output "linux_domainjoin_url" {
-  value = azurerm_storage_blob.linb_domainjoin.url
-}
+# output "linux_domainjoin_url" {
+#   value = azurerm_storage_blob.linb_domainjoin.url
+# }
 
-output "linux_monitor_agent_url" {
-  value = azurerm_storage_blob.linb_monitor_agent.url
-}
+# output "linux_monitor_agent_url" {
+#   value = azurerm_storage_blob.linb_monitor_agent.url
+# }
 
 output "additional_resource_groups" {
   value = { for group in azurerm_resource_group.additional_resource_groups : group.name => group.id }

@@ -27,7 +27,7 @@
 
 resource "azurerm_storage_container" "docs_container" {
   name                  = "fedrampdocsandartifacts"
-  storage_account_name  = azurerm_storage_account.docs_sa.name
+  storage_account_name  = module.docs_sa.name
   container_access_type = "private"
 }
 
@@ -53,7 +53,7 @@ resource "azurerm_storage_container" "docs_container" {
 module "diag_docs_sa" {
   source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics"
   diag_log_analytics_id = var.diag_log_analytics_id
-  resource_id           = azurerm_storage_account.docs_sa.id
+  resource_id           = module.docs_sa.id
   resource_type         = "sa"
 }
 

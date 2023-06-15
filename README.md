@@ -2,7 +2,7 @@
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up.
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region.
 
 ### Resource List
 

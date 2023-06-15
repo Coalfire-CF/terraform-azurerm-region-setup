@@ -31,24 +31,24 @@ resource "azurerm_storage_container" "docs_container" {
   container_access_type = "private"
 }
 
-resource "azurerm_role_assignment" "tstate_kv_crypto_user_docs" {
-  scope                = var.core_kv_id
-  role_definition_name = "Key Vault Crypto Service Encryption User"
-  principal_id         = azurerm_storage_account.docs_sa.identity.0.principal_id
+# resource "azurerm_role_assignment" "tstate_kv_crypto_user_docs" {
+#   scope                = var.core_kv_id
+#   role_definition_name = "Key Vault Crypto Service Encryption User"
+#   principal_id         = azurerm_storage_account.docs_sa.identity.0.principal_id
 
-  depends_on = [
-    azurerm_storage_account.docs_sa
-  ]
-}
+#   depends_on = [
+#     azurerm_storage_account.docs_sa
+#   ]
+# }
 
-resource "azurerm_storage_account_customer_managed_key" "enable_docs_cmk" {
-  storage_account_id = azurerm_storage_account.docs_sa.id
-  key_vault_id       = var.core_kv_id
-  key_name           = "docs-cmk"
-  depends_on = [
-    azurerm_role_assignment.tstate_kv_crypto_user_docs
-  ]
-}
+# resource "azurerm_storage_account_customer_managed_key" "enable_docs_cmk" {
+#   storage_account_id = azurerm_storage_account.docs_sa.id
+#   key_vault_id       = var.core_kv_id
+#   key_name           = "docs-cmk"
+#   depends_on = [
+#     azurerm_role_assignment.tstate_kv_crypto_user_docs
+#   ]
+# }
 
 module "diag_docs_sa" {
   source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics"
@@ -72,7 +72,7 @@ module "docs_sa" {
   public_network_access_enabled = true
   enable_customer_managed_key   = true
   cmk_key_vault_id              = module.core_kv.id
-  cmk_key_vault_key_name        = azurerm_storage_account_customer_managed_key.enable_docs_cmk.key_name
+  # cmk_key_vault_key_name        = azurerm_storage_account_customer_managed_key.enable_docs_cmk.key_name
   storage_containers = [
     "tfstate"
   ]

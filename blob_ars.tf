@@ -63,7 +63,7 @@
 
 module "ars_sa" {
   source                = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
-  name                  = "${replace(var.resource_prefix, "-", "")}docs"
+  name                  = "${replace(var.resource_prefix, "-", "")}saarsvault"
   resource_group_name   = azurerm_resource_group.management.name
   location              = var.location
   account_kind          = "StorageV2"

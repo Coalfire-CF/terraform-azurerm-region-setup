@@ -72,7 +72,7 @@ module "docs_sa" {
   public_network_access_enabled = true
   enable_customer_managed_key   = true
   cmk_key_vault_id              = module.core_kv.id
-  cmk_key_vault_key_name        = azurerm_key_vault_key.docs-cmk.name
+  cmk_key_vault_key_name        = azurerm_storage_account_customer_managed_key.enable_docs_cmk.key_name
   storage_containers = [
     "tfstate"
   ]

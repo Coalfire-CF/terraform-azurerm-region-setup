@@ -25,11 +25,11 @@
 #   }, var.global_tags, var.regional_tags)
 # }
 
-resource "azurerm_storage_container" "docs_container" {
-  name                  = "fedrampdocsandartifacts"
-  storage_account_name  = module.docs_sa.name
-  container_access_type = "private"
-}
+# resource "azurerm_storage_container" "docs_container" {
+#   name                  = "fedrampdocsandartifacts"
+#   storage_account_name  = module.docs_sa.name
+#   container_access_type = "private"
+# }
 
 # resource "azurerm_role_assignment" "tstate_kv_crypto_user_docs" {
 #   scope                = var.core_kv_id
@@ -78,6 +78,6 @@ module "docs_sa" {
   cmk_key_vault_id = var.core_kv_id
   # cmk_key_vault_key_name        = azurerm_storage_account_customer_managed_key.enable_docs_cmk.key_name
   storage_containers = [
-    "tfstate"
+    "fedrampdocsandartifacts"
   ]
 }

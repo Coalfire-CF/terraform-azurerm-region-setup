@@ -38,6 +38,14 @@ output "storage_account_install_name" {
 #   value = azurerm_storage_account.docs_sa.name
 # }
 
+output "storage_account_docs_id" {
+  value = module.docs_sa.id
+}
+
+output "storage_account_docs_name" {
+  value = module.docs_sa.name
+}
+
 output "storage_account_vmdiag_id" {
   value = azurerm_storage_account.vm_diag.id
 }

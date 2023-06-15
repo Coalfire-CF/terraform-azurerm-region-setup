@@ -66,12 +66,16 @@ module "docs_sa" {
   ip_rules              = var.ip_for_remote_access
   diag_log_analytics_id = azurerm_log_analytics_workspace.core-la.id
   #virtual_network_subnet_ids = var.fw_virtual_network_subnet_ids
-  tags = var.tags
+  tags = merge({
+    Function = "Storage"
+    Plane    = "Management"
+  }, var.global_tags, var.regional_tags)
 
   #OPTIONAL
   public_network_access_enabled = true
   enable_customer_managed_key   = true
-  cmk_key_vault_id              = module.core_kv.id
+  #cmk_key_vault_id              = module.core_kv.id
+  cmk_key_vault_id = var.core_kv_id
   # cmk_key_vault_key_name        = azurerm_storage_account_customer_managed_key.enable_docs_cmk.key_name
   storage_containers = [
     "tfstate"

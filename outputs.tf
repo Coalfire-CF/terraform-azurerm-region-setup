@@ -76,11 +76,11 @@ output "installs_container_name" {
 }
 
 output "storage_account_ars_id" {
-  value = azurerm_storage_account.ars_sa.id
+  value = module.ars_sa.id
 }
 
 output "storage_account_ars_name" {
-  value = azurerm_storage_account.ars_sa.name
+  value = module.ars_sa.name
 }
 
 # output "storage_account_tfstate_id" {

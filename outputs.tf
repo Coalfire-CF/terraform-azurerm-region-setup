@@ -56,15 +56,21 @@ output "vmdiag_endpoint" {
 }
 
 output "shellscripts_container_id" {
-  value = azurerm_storage_container.shellscripts_container.id
+  #value = azurerm_storage_container.shellscripts_container.id
+  value = module.storage.container_ids["shellscripts"]
+
 }
 
 output "installs_container_id" {
-  value = azurerm_storage_container.installfile_container.id
+  #value = azurerm_storage_container.installfile_container.id
+  value = module.storage.container_ids["installs"]
+
 }
 
 output "installs_container_name" {
-  value = azurerm_storage_container.installfile_container.name
+  #value = azurerm_storage_container.installfile_container.name
+  value = module.storage.container_names["installs"]
+
 }
 
 output "storage_account_ars_id" {

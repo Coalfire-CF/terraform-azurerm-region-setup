@@ -15,7 +15,4 @@ module "ars_sa" {
   public_network_access_enabled = true
   enable_customer_managed_key   = true
   cmk_key_vault_id              = var.core_kv_id
-  # storage_containers = [
-  #   "fedrampdocsandartifacts"
-  # ]
 }

@@ -23,11 +23,11 @@ output "storage_account_flowlogs_name" {
 }
 
 output "storage_account_install_id" {
-  value = azurerm_storage_account.install_blob.id
+  value = module.installs_sa.id
 }
 
 output "storage_account_install_name" {
-  value = azurerm_storage_account.install_blob.name
+  value = module.installs_sa.name
 }
 
 output "storage_account_docs_id" {
@@ -39,11 +39,11 @@ output "storage_account_docs_name" {
 }
 
 output "storage_account_vmdiag_id" {
-  value = azurerm_storage_account.vm_diag.id
+  value = module.vm_diag.id
 }
 
 output "storage_account_vmdiag_name" {
-  value = azurerm_storage_account.vm_diag.name
+  value = module.vm_diag.name
 }
 
 output "storage_account_vm_diag_sas" {
@@ -52,7 +52,7 @@ output "storage_account_vm_diag_sas" {
 }
 
 output "vmdiag_endpoint" {
-  value = azurerm_storage_account.vm_diag.primary_blob_endpoint
+  value = module.vm_diag.primary_blob_endpoint
 }
 
 output "shellscripts_container_id" {

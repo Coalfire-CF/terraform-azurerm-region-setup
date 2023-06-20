@@ -1,24 +1,27 @@
-resource "azurerm_storage_account" "vm_diag" {
-  name                            = length("${local.storage_name_prefix}savmdiag") <= 24 ? "${local.storage_name_prefix}savmdiag" : "${var.location_abbreviation}mp${var.app_abbreviation}savmdiag"
-  resource_group_name             = azurerm_resource_group.management.name
-  location                        = var.location
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  account_kind                    = "StorageV2"
-  enable_https_traffic_only       = true
-  allow_nested_items_to_be_public = false
-
-  lifecycle {
-    prevent_destroy = true
-  }
+module "vm_diag" {
+  source                = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
+  name                  = "${replace(var.resource_prefix, "-", "")}savmdiag"
+  resource_group_name   = azurerm_resource_group.management.name
+  location              = var.location
+  account_kind          = "StorageV2"
+  ip_rules              = var.ip_for_remote_access
+  diag_log_analytics_id = var.diag_log_analytics_id
+  #virtual_network_subnet_ids = var.fw_virtual_network_subnet_ids
   tags = merge({
     Function = "Storage"
     Plane    = "Management"
   }, var.global_tags, var.regional_tags)
+
+  public_network_access_enabled = true
+  enable_customer_managed_key   = true
+  cmk_key_vault_id              = var.core_kv_id
+  # storage_containers = [
+  #   ""
+  # ]
 }
 
 data "azurerm_storage_account_sas" "vm_diag_sas" {
-  connection_string = azurerm_storage_account.vm_diag.primary_connection_string
+  connection_string = module.vm_diag.primary_connection_string
   https_only        = true
 
   resource_types {
@@ -49,11 +52,4 @@ data "azurerm_storage_account_sas" "vm_diag_sas" {
     tag     = false
     filter  = false
   }
-}
-
-module "diag_vm_diag_sa" {
-  source                = "github.com/Coalfire-CF/ACE-Azure-Diagnostics"
-  diag_log_analytics_id = var.diag_log_analytics_id
-  resource_id           = azurerm_storage_account.vm_diag.id
-  resource_type         = "sa"
 }

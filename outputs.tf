@@ -15,11 +15,11 @@ output "windows_ca_id" {
 }
 
 output "storage_account_flowlogs_id" {
-  value = azurerm_storage_account.flowlogs.id
+  value = module.flowlogs_sa.id
 }
 
 output "storage_account_flowlogs_name" {
-  value = azurerm_storage_account.flowlogs.name
+  value = module.flowlogs_sa.name
 }
 
 output "storage_account_install_id" {

@@ -1,4 +1,4 @@
-module "installs_sa" {
+module "flowlogs_sa" {
   source                = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
   name                  = "${replace(var.resource_prefix, "-", "")}saflowlogs"
   resource_group_name   = azurerm_resource_group.management.name

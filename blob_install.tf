@@ -1,12 +1,12 @@
 module "installs_sa" {
-  source                = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
-  name                  = "${replace(var.resource_prefix, "-", "")}sainstalls"
-  resource_group_name   = azurerm_resource_group.management.name
-  location              = var.location
-  account_kind          = "StorageV2"
-  ip_rules              = var.ip_for_remote_access
-  diag_log_analytics_id = var.diag_log_analytics_id
-  #virtual_network_subnet_ids = var.fw_virtual_network_subnet_ids
+  source                     = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
+  name                       = "${replace(var.resource_prefix, "-", "")}sainstalls"
+  resource_group_name        = azurerm_resource_group.management.name
+  location                   = var.location
+  account_kind               = "StorageV2"
+  ip_rules                   = var.ip_for_remote_access
+  diag_log_analytics_id      = var.diag_log_analytics_id
+  virtual_network_subnet_ids = var.fw_virtual_network_subnet_ids
   tags = merge({
     Function = "Storage"
     Plane    = "Management"

@@ -69,7 +69,7 @@ output "installs_container_id" {
 
 output "installs_container_name" {
   #value = azurerm_storage_container.installfile_container.name
-  value = module.installs_sa.container_names["install-filess"]
+  value = module.installs_sa.container_names["install-files"]
 
 }
 

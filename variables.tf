@@ -79,7 +79,7 @@ variable "sas_end_date" {
 
 variable "firewall_vnet_subnet_ids" {
   description = "Subnet ID's that should be allowed for the firewall"
-  type        = string
+  type        = list(string)
   #default     = null
   default = [] #testing 
 }

@@ -84,6 +84,12 @@ variable "firewall_vnet_subnet_ids" {
   default = [] #testing 
 }
 
+variable "fw_virtual_network_subnet_ids" {
+  type        = list(string)
+  description = "List of subnet ids for the firewall"
+  default     = []
+}
+
 variable "ip_for_remote_access" {
   description = "This is the same as 'cidrs_for_remote_access' but without the /32 on each of the files. The 'ip_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over"
   type        = list(any)

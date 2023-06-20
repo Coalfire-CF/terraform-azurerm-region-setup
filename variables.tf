@@ -79,8 +79,15 @@ variable "sas_end_date" {
 
 variable "firewall_vnet_subnet_ids" {
   description = "Subnet ID's that should be allowed for the firewall"
-  type        = string
-  default     = null
+  type        = list(string)
+  #default     = null
+  default = [] #testing 
+}
+
+variable "fw_virtual_network_subnet_ids" {
+  type        = list(string)
+  description = "List of subnet ids for the firewall"
+  default     = []
 }
 
 variable "ip_for_remote_access" {

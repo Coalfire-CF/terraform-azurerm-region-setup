@@ -2,7 +2,11 @@
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up in a specific Azure region.
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. 
+
+### Dependencies
+
+This module is dependent on the Security-Core module. 
 
 ### Resource List
 

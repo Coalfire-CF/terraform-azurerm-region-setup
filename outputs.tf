@@ -1,19 +1,3 @@
-output "rhel8_id" {
-  value = azurerm_shared_image.rhel8-golden.id
-}
-
-output "windows_golden_id" {
-  value = azurerm_shared_image.windows2019.id
-}
-
-output "windows_ad_id" {
-  value = azurerm_shared_image.windows2019ad.id
-}
-
-output "windows_ca_id" {
-  value = azurerm_shared_image.windows2019ca.id
-}
-
 output "storage_account_flowlogs_id" {
   value = module.flowlogs_sa.id
 }

@@ -15,13 +15,17 @@ This module creates basic Azure resources that are foundational to environment s
 
 ### Resource List
 
+- Resource Groups
 - Azure Monitor
+- Network Watcher
+- Azure Image Gallery
 - Storage Account Blob and Container for terraform remote state lock
 - Storage Account Blobs for
   - backup
   - flowlogs
   - monitor logs
   - installer files
+  - CloudShell
   - Terraform remote state
 
 ## Code Updates
@@ -81,7 +85,7 @@ provider "azurerm" {
 }
 
 module "setup" {
-  source = "github.com/Coalfire-CF/ACE-Azure-RegionSetup"
+  source = "github.com/Coalfire-CF/ACE-Azure-RegionSetup?"
 
   subscription_id       = var.subscription_id
   location_abbreviation = var.location_abbreviation

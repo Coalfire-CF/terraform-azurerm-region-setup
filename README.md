@@ -7,7 +7,7 @@
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [coalfire-azure-pak](https://github.com/Coalfire-CF/ACE-Azure-RA) FedRAMP Framework.
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework.
 
 ### Dependencies
 

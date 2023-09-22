@@ -1,59 +1,120 @@
-# Coalfire Azure Region Setup Module
+<div align="center">
+<img src="coalfire_logo.png" width="200">
+
+</div>
+
+# terraform-azurerm-region-setup
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. 
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework.
 
 ### Dependencies
 
-This module is dependent on the Security-Core module. 
+- This module is dependent on the `terraform-azurerm-security-core` module being deployed. 
 
 ### Resource List
 
+- Resource Groups
 - Azure Monitor
+- Network Watcher
+- Azure Image Gallery
 - Storage Account Blob and Container for terraform remote state lock
 - Storage Account Blobs for
   - backup
   - flowlogs
   - monitor logs
   - installer files
+  - CloudShell
   - Terraform remote state
-- A stopinator Azure function - Not ported yet
 
-### Stopinator Details
+## Code Updates
 
- The stopinator Azure function created within this module is triggered every 5 minutes.  Instances that should be stopped should have the following tags:
+`tstate.tf` Update to the appropriate version and storage accounts, see sample below:
 
-- start_time: The time (24 hour format) that the instance should be started
-- stop_time:  The time (24 hour format) that the instance should be stopped
-- stop_weekend: If this tag is added, the instance will be stopped during the weekend
+``` hcl
+terraform {
+  required_version = ">= 1.1.7"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.45.0"
+    }
+  }
+  backend "azurerm" {
+    resource_group_name  = "prod-mp-core-rg"
+    storage_account_name = "prodmpsatfstate"
+    container_name       = "tfstatecontainer"
+    environment          = "usgovernment"
+    key                  = "setup.tfstate"
+  }
+}
+```
 
-### Inputs
+Update the `remote-data.tf` file to add the setup security state key. Example remote data block: 
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| subscription\_id | The Azure subscription ID resources are being deployed into | `string` | n/a | yes |
-| location | The Azure location/region to create things in | `string` | n/a | yes |
-| create\_monitor | Whether or not to create Azure Monitor resources | `bool` | n/a | yes |
-| default\_azure\_location | The default Azure location/region to create resources in | `string` | n/a | yes |
-| is\_gov | Whether or not resources will be deployed in a GovCloud region | `bool` | n/a | yes |
-| resource\_prefix | The prefix for the storage account names | `string` | n/a | yes |
-| function\_time\_zone | The time zone for the stopinator Azure function | `string` | `"US/Eastern"` | no |
-| diag_log_analytics_id | ID of the Log Analytics Workspace diagnostic logs should be sent to | string | N/A | yes |
-| additional_resource_groups | Additional resource groups to create | list(string) | [] | no |
+``` hcl
+data "terraform_remote_state" "usgv-region-setup" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "prod-mp-core-rg"
+    storage_account_name = "prodmpsatfstate"
+    container_name       = "tfstatecontainer"
+    environment          = "usgovernment"
+    key                  = "setup.tfstate"
+  }
+}
+```
 
-### Outputs
+## Deployment Steps
 
-| Name | Description |
-|------|-------------|
-| rhel8\_id | The id of the rhel image from image gallery |
-| storage\_account\_ars\_id | The id of the Azure Recovery Services storage account |
-| storage\_account\_flowlogs\_id | The id of the flowlog storage account |
-| storage\_account\_install\_id | The id of the installs storage account |
-| storage\_account\_tfstate\_id | The id of the tfstate storage account |
-| windows\_golden\_id | The id of the windows image from image gallery |
-| windows\_ad\_id | The id of the windows AD image from image gallery |
-| additional_resource_groups | Map with additional resource groups with format `{name = id}` |
+This module can be called as outlined below.
+
+- Change directory to the `/coalfire-azure-pak/terraform/prod/us-va/region-setup` folder.
+- Run `terraform init` to download modules and create initial local state file.
+- Run `terraform plan` to ensure no errors and validate plan is deploying expected resources.
+- If everything looks correct in the plan output, run `terraform apply`.
+
+## Usage
+
+Include example for how to call the module below with generic variables
+
+```hcl
+provider "azurerm" {
+  features {}
+}
+
+module "setup" {
+  source = "github.com/Coalfire-CF/ACE-Azure-RegionSetup?"
+
+  subscription_id       = var.subscription_id
+  location_abbreviation = var.location_abbreviation
+  location              = var.location
+  resource_prefix       = local.resource_prefix
+  app_abbreviation      = var.app_abbreviation
+  tenant_id             = var.tenant_id
+  regional_tags         = var.regional_tags
+  global_tags           = merge(var.global_tags, local.global_local_tags)
+  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
+  app_rg_name           = "${local.resource_prefix}-application-rg"
+  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
+  networking_rg_name    = "${local.resource_prefix}-networking-rg"
+  sas_start_date        = "2023-10-06" #Change to today's date
+  sas_end_date          = "2023-11-06" #Change to one month from now
+  ip_for_remote_access  = var.ip_for_remote_access
+  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
+  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
+  admin_principal_ids   = var.admin_principal_ids
+
+  # uncomment the following line when the mgmt-network is created
+  #firewall_vnet_subnet_ids = values(data.terraform_remote_state.usgv_mgmt_vnet.outputs.usgv_mgmt_vnet_subnet_ids) #Uncomment and rerun terraform apply after the mgmt-network is created
+  
+  additional_resource_groups = [
+    "${local.resource_prefix}-identity-rg"
+  ]
+}
+
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -88,11 +149,7 @@ No requirements.
 | [azurerm_resource_group.management](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_resource_group.network](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_role_assignment.tstate_kv_crypto_user_cloudshell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_shared_image.rhel8-golden](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
-| [azurerm_shared_image.windows2019](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
-| [azurerm_shared_image.windows2019ad](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
-| [azurerm_shared_image.windows2019ca](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
-| [azurerm_shared_image_gallery.packerimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
+| [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
 | [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
@@ -136,7 +193,6 @@ No requirements.
 | <a name="output_management_rg_name"></a> [management\_rg\_name](#output\_management\_rg\_name) | n/a |
 | <a name="output_network_rg_name"></a> [network\_rg\_name](#output\_network\_rg\_name) | n/a |
 | <a name="output_network_watcher_name"></a> [network\_watcher\_name](#output\_network\_watcher\_name) | n/a |
-| <a name="output_rhel8_id"></a> [rhel8\_id](#output\_rhel8\_id) | n/a |
 | <a name="output_shellscripts_container_id"></a> [shellscripts\_container\_id](#output\_shellscripts\_container\_id) | n/a |
 | <a name="output_storage_account_ars_id"></a> [storage\_account\_ars\_id](#output\_storage\_account\_ars\_id) | n/a |
 | <a name="output_storage_account_ars_name"></a> [storage\_account\_ars\_name](#output\_storage\_account\_ars\_name) | n/a |
@@ -150,7 +206,4 @@ No requirements.
 | <a name="output_storage_account_vmdiag_id"></a> [storage\_account\_vmdiag\_id](#output\_storage\_account\_vmdiag\_id) | n/a |
 | <a name="output_storage_account_vmdiag_name"></a> [storage\_account\_vmdiag\_name](#output\_storage\_account\_vmdiag\_name) | n/a |
 | <a name="output_vmdiag_endpoint"></a> [vmdiag\_endpoint](#output\_vmdiag\_endpoint) | n/a |
-| <a name="output_windows_ad_id"></a> [windows\_ad\_id](#output\_windows\_ad\_id) | n/a |
-| <a name="output_windows_ca_id"></a> [windows\_ca\_id](#output\_windows\_ca\_id) | n/a |
-| <a name="output_windows_golden_id"></a> [windows\_golden\_id](#output\_windows\_golden\_id) | n/a |
 <!-- END_TF_DOCS -->

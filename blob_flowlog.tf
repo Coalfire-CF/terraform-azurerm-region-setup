@@ -1,5 +1,5 @@
 module "flowlogs_sa" {
-  source                     = "github.com/Coalfire-CF/ACE-Azure-StorageAccount"
+  source                     = "github.com/Coalfire-CF/terraform-azurerm-storage-account"
   name                       = "${replace(var.resource_prefix, "-", "")}saflowlogs"
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location

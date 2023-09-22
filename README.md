@@ -7,7 +7,7 @@
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework.
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework. Learn more at [Coalfire OpenSource](https://coalfire.com/opensource).
 
 ### Dependencies
 
@@ -85,7 +85,7 @@ provider "azurerm" {
 }
 
 module "setup" {
-  source = "github.com/Coalfire-CF/ACE-Azure-RegionSetup?"
+  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
 
   subscription_id       = var.subscription_id
   location_abbreviation = var.location_abbreviation

@@ -134,7 +134,7 @@ No requirements.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | github.com/Coalfire-CF/ACE-Azure-StorageAccount | n/a |
-| <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | github.com/Coalfire-CF/ACE-Azure-Diagnostics | n/a |
+| <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | github.com/Coalfire-CF/terraform-azurerm-diagnostics | n/a |
 | <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | github.com/Coalfire-CF/ACE-Azure-StorageAccount | n/a |
 | <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | github.com/Coalfire-CF/ACE-Azure-StorageAccount | n/a |
 | <a name="module_installs_sa"></a> [installs\_sa](#module\_installs\_sa) | github.com/Coalfire-CF/ACE-Azure-StorageAccount | n/a |

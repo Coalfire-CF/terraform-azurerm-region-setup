@@ -13,7 +13,7 @@ Learn more at [Coalfire OpenSource](https://coalfire.com/opensource).
 
 ### Dependencies
 
-- This module is dependent on the `terraform-azurerm-security-core` module being deployed. 
+- This module is dependent on the [Coalfire-CF/terraform-azurerm-security-core](https://github.com/Coalfire-CF/terraform-azurerm-security-core) module being deployed. 
 
 ### Resource List
 

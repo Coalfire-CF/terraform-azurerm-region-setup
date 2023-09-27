@@ -209,3 +209,20 @@ No requirements.
 | <a name="output_storage_account_vmdiag_name"></a> [storage\_account\_vmdiag\_name](#output\_storage\_account\_vmdiag\_name) | n/a |
 | <a name="output_vmdiag_endpoint"></a> [vmdiag\_endpoint](#output\_vmdiag\_endpoint) | n/a |
 <!-- END_TF_DOCS -->
+
+
+## Contributing
+
+[Start Here](CONTRIBUTING.md)
+
+## License
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/license/mit/)
+
+## Contact Us
+
+[Coalfire](https://coalfire.com/)
+
+### Copyright
+
+Copyright © 2023 Coalfire Systems Inc.

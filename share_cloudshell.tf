@@ -5,7 +5,7 @@ resource "azurerm_storage_account" "cloudShell" {
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
-  enable_https_traffic_only       = true
+  https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
 
   lifecycle {
@@ -28,7 +28,7 @@ resource "azurerm_storage_account" "cloudShell" {
 resource "azurerm_role_assignment" "tstate_kv_crypto_user_cloudshell" {
   scope                = var.core_kv_id
   role_definition_name = "Key Vault Crypto Service Encryption User"
-  principal_id         = azurerm_storage_account.cloudShell.identity.0.principal_id
+  principal_id         = azurerm_storage_account.cloudShell.identity[0].principal_id
 
   depends_on = [
     azurerm_storage_account.cloudShell
@@ -46,7 +46,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_cloudShell_cmk" 
 }
 
 module "diag_cloudshell_sa" {
-  source                = "github.com/Coalfire-CF/terraform-azurerm-diagnostics"
+  source                = "github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v1.0.0"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.cloudShell.id
   resource_type         = "sa"

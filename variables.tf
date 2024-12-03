@@ -23,21 +23,6 @@ variable "app_abbreviation" {
   type        = string
 }
 
-variable "subscription_id" {
-  description = "The Azure subscription ID where resources are being deployed into"
-  type        = string
-}
-
-variable "tenant_id" {
-  description = "The Azure tenant ID that owns the deployed resources"
-  type        = string
-}
-
-# variable "sub_diag_logs" {
-#   description = "Types of logs to gather for subscription diagnostics"
-#   type        = list(any)
-# }
-
 variable "mgmt_rg_name" {
   description = "Management plane resource group name"
   type        = string
@@ -72,18 +57,6 @@ variable "sas_end_date" {
   type        = string
 }
 
-# variable "create_monitor" {
-#   description = "Whether or not to create Azure Monitor resources"
-#   type        = bool
-# }
-
-variable "firewall_vnet_subnet_ids" {
-  description = "Subnet ID's that should be allowed for the firewall"
-  type        = list(string)
-  #default     = null
-  default = [] #testing 
-}
-
 variable "fw_virtual_network_subnet_ids" {
   type        = list(string)
   description = "List of subnet ids for the firewall"
@@ -107,11 +80,6 @@ variable "diag_log_analytics_id" {
 variable "resource_prefix" {
   type        = string
   description = "Name prefix used for resources"
-}
-
-variable "admin_principal_ids" {
-  type        = set(string)
-  description = "List of principal ID's for all admins"
 }
 
 variable "additional_resource_groups" {

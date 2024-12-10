@@ -1,5 +1,5 @@
 module "docs_sa" {
-  source                     = "github.com/Coalfire-CF/terraform-azurerm-storage-account"
+  source                     = "github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.0.1"
   name                       = "${replace(var.resource_prefix, "-", "")}docs"
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location

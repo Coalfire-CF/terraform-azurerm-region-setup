@@ -89,6 +89,11 @@ variable "additional_resource_groups" {
 }
 
 # Optional custom name inputs
+variable "compute_gallery_name" {
+  type        = string
+  description = "(Optional) Custom name for the Azure Compute Gallery (Shared Image Gallery)"
+  default     = "${replace(var.resource_prefix, "-", "_")}_imagegallery_1"
+}
 variable "cloudshell_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Cloudshell Storage Account"

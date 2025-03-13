@@ -124,3 +124,8 @@ variable "vmdiag_storageaccount_name" {
   description = "(Optional) Custom name for the VM Diagnostic Logs Storage Account"
   default     = "${replace(var.resource_prefix, "-", "")}savmdiag"
 }
+variable "network_watcher_name" {
+  type        = string
+  description = "(Optional) Custom name for the Azure Network Watcher"
+  default     = "${replace(var.resource_prefix, "-", "_")}_netw_watcher"
+}

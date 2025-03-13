@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "cloudShell" {
-  name                            = length("${local.storage_name_prefix}sacloudshell") <= 24 ? "${local.storage_name_prefix}sacloudshell" : "${var.location_abbreviation}mp${var.app_abbreviation}sacloudshell"
+  name                            = var.cloudshell_storageaccount_name
   resource_group_name             = azurerm_resource_group.management.name
   location                        = var.location
   account_tier                    = "Standard"

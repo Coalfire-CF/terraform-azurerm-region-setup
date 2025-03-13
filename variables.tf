@@ -87,3 +87,35 @@ variable "additional_resource_groups" {
   description = "Additional resource groups to create"
   default     = []
 }
+
+# Optional custom name inputs
+variable "cloudshell_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the Cloudshell Storage Account"
+  default     = length("${local.storage_name_prefix}sacloudshell") <= 24 ? "${local.storage_name_prefix}sacloudshell" : "${var.location_abbreviation}mp${var.app_abbreviation}sacloudshell"
+}
+variable "ars_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the ars Storage Account"
+  default     = "${replace(var.resource_prefix, "-", "")}saarsvault"
+}
+variable "docs_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the Documents Storage Account"
+  default     = "${replace(var.resource_prefix, "-", "")}docs"
+}
+variable "flowlogs_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the Flow Logs Storage Account"
+  default     = "${replace(var.resource_prefix, "-", "")}saflowlogs"
+}
+variable "installs_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the Installs Storage Account"
+  default     = "${replace(var.resource_prefix, "-", "")}sainstalls"
+}
+variable "vmdiag_storageaccount_name" {
+  type        = string
+  description = "(Optional) Custom name for the VM Diagnostic Logs Storage Account"
+  default     = "${replace(var.resource_prefix, "-", "")}savmdiag"
+}

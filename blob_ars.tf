@@ -1,6 +1,6 @@
 module "ars_sa" {
   source                = "github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.0.1"
-  name                  = "${replace(var.resource_prefix, "-", "")}saarsvault"
+  name                  = var.ars_storageaccount_name
   resource_group_name   = azurerm_resource_group.management.name
   location              = var.location
   account_kind          = "StorageV2"

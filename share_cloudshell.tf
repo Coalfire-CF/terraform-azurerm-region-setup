@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "cloudShell" {
-  name                            = length("${local.storage_name_prefix}sacloudshell") <= 24 ? "${local.storage_name_prefix}sacloudshell" : "${var.location_abbreviation}mp${var.app_abbreviation}sacloudshell"
+  name                            = local.cloudshell_storageaccount_name
   resource_group_name             = azurerm_resource_group.management.name
   location                        = var.location
   account_tier                    = "Standard"
@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "cloudShell" {
   allow_nested_items_to_be_public = false
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [
       customer_managed_key # required by https://github.com/hashicorp/terraform-provider-azurerm/issues/16085
     ]

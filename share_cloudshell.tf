@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "cloudShell" {
   allow_nested_items_to_be_public = false
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [
       customer_managed_key # required by https://github.com/hashicorp/terraform-provider-azurerm/issues/16085
     ]

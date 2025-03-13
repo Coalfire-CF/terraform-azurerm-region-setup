@@ -92,40 +92,40 @@ variable "additional_resource_groups" {
 variable "compute_gallery_name" {
   type        = string
   description = "(Optional) Custom name for the Azure Compute Gallery (Shared Image Gallery)"
-  default     = "${replace(var.resource_prefix, "-", "_")}_imagegallery_1"
+  default     = local.default_compute_gallery_name
 }
 variable "cloudshell_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Cloudshell Storage Account"
-  default     = length("${local.storage_name_prefix}sacloudshell") <= 24 ? "${local.storage_name_prefix}sacloudshell" : "${var.location_abbreviation}mp${var.app_abbreviation}sacloudshell"
+  default     = local.default_cloudshell_storageaccount_name
 }
 variable "ars_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the ars Storage Account"
-  default     = "${replace(var.resource_prefix, "-", "")}saarsvault"
+  default     = local.default_ars_storageaccount_name
 }
 variable "docs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Documents Storage Account"
-  default     = "${replace(var.resource_prefix, "-", "")}docs"
+  default     = local.default_docs_storageaccount_name
 }
 variable "flowlogs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Flow Logs Storage Account"
-  default     = "${replace(var.resource_prefix, "-", "")}saflowlogs"
+  default     = local.default_flowlogs_storageaccount_name
 }
 variable "installs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Installs Storage Account"
-  default     = "${replace(var.resource_prefix, "-", "")}sainstalls"
+  default     = local.default_installs_storageaccount_name
 }
 variable "vmdiag_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the VM Diagnostic Logs Storage Account"
-  default     = "${replace(var.resource_prefix, "-", "")}savmdiag"
+  default     = local.default_vmdiag_storageaccount_name
 }
 variable "network_watcher_name" {
   type        = string
   description = "(Optional) Custom name for the Azure Network Watcher"
-  default     = "${replace(var.resource_prefix, "-", "_")}_netw_watcher"
+  default     = local.default_network_watcher_name
 }

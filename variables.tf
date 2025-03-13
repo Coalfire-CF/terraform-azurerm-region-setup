@@ -176,5 +176,4 @@ variable "network_watcher_name" {
   type        = string
   description = "(Optional) Custom name for the Azure Network Watcher"
   default     = "default"
-
 }

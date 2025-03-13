@@ -109,6 +109,28 @@ module "setup" {
 
 ```
 
+
+### Optional - custom resource names
+You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
+
+```hcl
+module "setup" {
+...
+  compute_gallery_name           = "computegallery01"
+  cloudshell_storageaccount_name = "usgovcloudshellsa"
+  ars_storageaccount_name        = "usgovarssa"
+  docs_storageaccount_name       = "usgovdocssa" 
+  flowlogs_storageaccount_name   = "usgovflowlogssa"
+  installs_storageaccount_name   = "usgovinstallssa"
+  vmdiag_storageaccount_name     = "usgovdiagsa"
+  network_watcher_name           = "usgovnetworkwatcher"
+...
+}
+
+```
+
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

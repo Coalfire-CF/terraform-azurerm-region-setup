@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "cloudShell" {
-  name                            = var.cloudshell_storageaccount_name
+  name                            = local.cloudshell_storageaccount_name
   resource_group_name             = azurerm_resource_group.management.name
   location                        = var.location
   account_tier                    = "Standard"

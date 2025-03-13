@@ -1,6 +1,6 @@
 module "docs_sa" {
   source                     = "github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.0.1"
-  name                       = var.docs_storageaccount_name
+  name                       = local.docs_storageaccount_name
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location
   account_kind               = "StorageV2"

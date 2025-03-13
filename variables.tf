@@ -92,40 +92,89 @@ variable "additional_resource_groups" {
 variable "compute_gallery_name" {
   type        = string
   description = "(Optional) Custom name for the Azure Compute Gallery (Shared Image Gallery)"
-  default     = local.default_compute_gallery_name
+  default     = "default"
 }
 variable "cloudshell_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Cloudshell Storage Account"
-  default     = local.default_cloudshell_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.cloudshell_storageaccount_name) < 25 && length(var.cloudshell_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.cloudshell_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "ars_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the ars Storage Account"
-  default     = local.default_ars_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.ars_storageaccount_name) < 25 && length(var.ars_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.ars_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "docs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Documents Storage Account"
-  default     = local.default_docs_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.docs_storageaccount_name) < 25 && length(var.docs_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.docs_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "flowlogs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Flow Logs Storage Account"
-  default     = local.default_flowlogs_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.flowlogs_storageaccount_name) < 25 && length(var.flowlogs_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.flowlogs_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "installs_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the Installs Storage Account"
-  default     = local.default_installs_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.installs_storageaccount_name) < 25 && length(var.installs_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.installs_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "vmdiag_storageaccount_name" {
   type        = string
   description = "(Optional) Custom name for the VM Diagnostic Logs Storage Account"
-  default     = local.default_vmdiag_storageaccount_name
+  default     = "default"
+  validation {
+    condition     = length(var.vmdiag_storageaccount_name) < 25 && length(var.vmdiag_storageaccount_name) > 2
+    error_message = "Storage account names must be between 3 and 24 characters in length"
+  }
+  validation {
+    condition     = can(regex("^[0-9a-z]+$", var.vmdiag_storageaccount_name))
+    error_message = "Storage account names must contain only lowercase letters and numbers"
+  }
 }
 variable "network_watcher_name" {
   type        = string
   description = "(Optional) Custom name for the Azure Network Watcher"
-  default     = local.default_network_watcher_name
+  default     = "default"
+
 }

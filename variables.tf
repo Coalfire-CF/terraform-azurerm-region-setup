@@ -177,3 +177,8 @@ variable "network_watcher_name" {
   description = "(Optional) Custom name for the Azure Network Watcher"
   default     = "default"
 }
+# variable "linux_domain_join_script_path" {
+#   type        = string
+#   description = "TODO"
+#   default     = "none"
+# }

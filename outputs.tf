@@ -101,5 +101,5 @@ output "linux_domainjoin_url" {
   value = var.linux_domain_join_script_path != "none" ? azurerm_storage_blob.linux_domainjoin[0].url : null
 }
 output "linux_monitor_agent_url" {
-  value = var.linux_monitor_agent_script_path != "none" ? azurerm_storage_blob.linux_monitor_agent[0].url : null
+  value = one(azurerm_storage_blob.linux_monitor_agent[*].url)
 }

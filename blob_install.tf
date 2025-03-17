@@ -20,23 +20,22 @@ module "installs_sa" {
   ]
 }
 
-
-resource "azurerm_storage_blob" "linb_domainjoin" {
-  count                  = var.linux_domain_join_script_path != "none" ? 1 : 0 
-  name                   = "ud_linux_join_ad.sh"
-  storage_account_name   = module.installs_sa.name 
+resource "azurerm_storage_blob" "linux_domainjoin" {
+  count                  = var.linux_domain_join_script_path != "none" ? 1 : 0
+  name                   = basename(var.linux_domain_join_script_path)
+  storage_account_name   = module.installs_sa.name
   storage_container_name = "shellscripts"
   type                   = "Block"
   source                 = var.linux_domain_join_script_path
 }
 
-resource "azurerm_storage_blob" "linb_monitor_agent" {
+resource "azurerm_storage_blob" "linux_monitor_agent" {
   count                  = var.linux_monitor_agent_script_path != "none" ? 1 : 0
-  name                   = "ud_linux_monitor_agent.sh"
-  storage_account_name   = module.installs_sa.name 
+  name                   = basename(var.linux_monitor_agent_script_path)
+  storage_account_name   = module.installs_sa.name
   storage_container_name = "shellscripts"
   type                   = "Block"
-  source                 = var.linux_monitor_agent_script_path 
+  source                 = var.linux_monitor_agent_script_path
 }
 
 

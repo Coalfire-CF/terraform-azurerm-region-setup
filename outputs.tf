@@ -98,9 +98,8 @@ output "additional_resource_groups" {
 # only output these values if the blobs were created.
 # Else, output null
 output "linux_domainjoin_url" {
-  # value = var.linux_domain_join_script_path != "none" ? azurerm_storage_blob.linux_domainjoin[0].url : null
-  value = "test"
+  value = var.linux_domain_join_script_path != "none" ? azurerm_storage_blob.linux_domainjoin[0].url : null
 }
-# output "linux_monitor_agent_url" {
-#   value = var.linux_monitor_agent_script_path != "none" ? azurerm_storage_blob.linux_monitor_agent[0].url : null
-# }
+output "linux_monitor_agent_url" {
+  value = var.linux_monitor_agent_script_path != "none" ? azurerm_storage_blob.linux_monitor_agent[0].url : null
+}

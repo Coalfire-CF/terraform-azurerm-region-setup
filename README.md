@@ -110,7 +110,7 @@ module "setup" {
 ```
 
 
-### Optional - custom resource names and blob storage for shellscript install files
+### Custom resource names
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -129,40 +129,29 @@ module "setup" {
 
 ```
 
+### File uploads
+Installation shellscripts may be uploaded to blob storage by specifying their paths.
 
-If blob storage is required for an installation shellscript, an optional attribute can be included with the install filepath. See below the module for use example.
+Currently, the following explicitly named uploads are supported:
+ - Linux domain join script
+ - Linux install script for Azure Monitor Agent
 
+To upload scripts, set any or all of the following arguments to the file path where the relevant script is located:
 
 ```hcl
 module "setup" {
-  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
-
-  location_abbreviation = var.location_abbreviation
-  location              = var.location
-  resource_prefix       = local.resource_prefix
-  app_abbreviation      = var.app_abbreviation
-  regional_tags         = var.regional_tags
-  global_tags           = merge(var.global_tags, local.global_local_tags)
-  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
-  app_rg_name           = "${local.resource_prefix}-application-rg"
-  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
-  networking_rg_name    = "${local.resource_prefix}-networking-rg"
-  sas_start_date        = "2023-10-06" #Change to today's date
-  sas_end_date          = "2023-11-06" #Change to one month from now
-  ip_for_remote_access  = var.ip_for_remote_access
-  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
-  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
-  
-  additional_resource_groups = [
-    "${local.resource_prefix}-identity-rg"
-  ]
-}
-
+...
 linux_domain_join_script_path   = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
 linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
-
+...
+}
 ```
 
+Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
+
+If no shellscript uploads are defined, terraform will not create any resources, and not define any outputs. However, if script uploads are set, the following outputs are defined:
+- `linux_domainjoin_url`
+- `linux_monitor_agent_url`
 
 
 <!-- BEGIN_TF_DOCS -->

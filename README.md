@@ -110,7 +110,7 @@ module "setup" {
 ```
 
 
-### Optional - custom resource names
+### Optional - custom resource names and blob storage for shellscript install files
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -126,6 +126,40 @@ module "setup" {
   network_watcher_name           = "usgovnetworkwatcher"
 ...
 }
+
+```
+
+
+If blob storage is required for an installation shellscript, an optional attribute can be included with the install filepath. See below the module for use example.
+
+
+```hcl
+module "setup" {
+  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
+
+  location_abbreviation = var.location_abbreviation
+  location              = var.location
+  resource_prefix       = local.resource_prefix
+  app_abbreviation      = var.app_abbreviation
+  regional_tags         = var.regional_tags
+  global_tags           = merge(var.global_tags, local.global_local_tags)
+  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
+  app_rg_name           = "${local.resource_prefix}-application-rg"
+  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
+  networking_rg_name    = "${local.resource_prefix}-networking-rg"
+  sas_start_date        = "2023-10-06" #Change to today's date
+  sas_end_date          = "2023-11-06" #Change to one month from now
+  ip_for_remote_access  = var.ip_for_remote_access
+  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
+  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
+  
+  additional_resource_groups = [
+    "${local.resource_prefix}-identity-rg"
+  ]
+}
+
+linux_domain_join_script_path   = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
+linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
 
 ```
 

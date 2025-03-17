@@ -41,4 +41,4 @@ resource "azurerm_storage_blob" "linb_monitor_agent" {
 
 
 
-# Update README to document new optional variables
+

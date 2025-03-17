@@ -204,6 +204,8 @@ linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monit
 | [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
+| [azurerm_storage_blob.linb_domainjoin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
+| [azurerm_storage_blob.linb_monitor_agent](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
 | [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
 
 ## Inputs
@@ -225,6 +227,8 @@ linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monit
 | <a name="input_installs_storageaccount_name"></a> [installs\_storageaccount\_name](#input\_installs\_storageaccount\_name) | (Optional) Custom name for the Installs Storage Account | `string` | `"default"` | no |
 | <a name="input_ip_for_remote_access"></a> [ip\_for\_remote\_access](#input\_ip\_for\_remote\_access) | This is the same as 'cidrs\_for\_remote\_access' but without the /32 on each of the files. The 'ip\_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over | `list(any)` | n/a | yes |
 | <a name="input_key_vault_rg_name"></a> [key\_vault\_rg\_name](#input\_key\_vault\_rg\_name) | Key Vault resource group name | `string` | `"keyvault-rg-01"` | no |
+| <a name="input_linux_domain_join_script_path"></a> [linux\_domain\_join\_script\_path](#input\_linux\_domain\_join\_script\_path) | Path to the shellscript that joins a Linux VM to a domain. | `string` | `"none"` | no |
+| <a name="input_linux_monitor_agent_script_path"></a> [linux\_monitor\_agent\_script\_path](#input\_linux\_monitor\_agent\_script\_path) | Path to the shellscript that installs Azure Monitor to a Linux VM. | `string` | `"none"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location/region to create resources in | `string` | n/a | yes |
 | <a name="input_location_abbreviation"></a> [location\_abbreviation](#input\_location\_abbreviation) | The  Azure location/region in 4 letter code | `string` | n/a | yes |
 | <a name="input_mgmt_rg_name"></a> [mgmt\_rg\_name](#input\_mgmt\_rg\_name) | Management plane resource group name | `string` | `"management-rg-1"` | no |

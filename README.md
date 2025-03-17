@@ -110,7 +110,7 @@ module "setup" {
 ```
 
 
-### Optional - custom resource names
+### Optional - custom resource names and blob storage for shellscript install files
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -126,6 +126,40 @@ module "setup" {
   network_watcher_name           = "usgovnetworkwatcher"
 ...
 }
+
+```
+
+
+If blob storage is required for an installation shellscript, an optional attribute can be included with the install filepath. See below the module for use example.
+
+
+```hcl
+module "setup" {
+  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
+
+  location_abbreviation = var.location_abbreviation
+  location              = var.location
+  resource_prefix       = local.resource_prefix
+  app_abbreviation      = var.app_abbreviation
+  regional_tags         = var.regional_tags
+  global_tags           = merge(var.global_tags, local.global_local_tags)
+  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
+  app_rg_name           = "${local.resource_prefix}-application-rg"
+  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
+  networking_rg_name    = "${local.resource_prefix}-networking-rg"
+  sas_start_date        = "2023-10-06" #Change to today's date
+  sas_end_date          = "2023-11-06" #Change to one month from now
+  ip_for_remote_access  = var.ip_for_remote_access
+  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
+  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
+  
+  additional_resource_groups = [
+    "${local.resource_prefix}-identity-rg"
+  ]
+}
+
+linux_domain_join_script_path   = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
+linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
 
 ```
 
@@ -170,6 +204,8 @@ module "setup" {
 | [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
+| [azurerm_storage_blob.linb_domainjoin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
+| [azurerm_storage_blob.linb_monitor_agent](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
 | [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
 
 ## Inputs
@@ -191,6 +227,8 @@ module "setup" {
 | <a name="input_installs_storageaccount_name"></a> [installs\_storageaccount\_name](#input\_installs\_storageaccount\_name) | (Optional) Custom name for the Installs Storage Account | `string` | `"default"` | no |
 | <a name="input_ip_for_remote_access"></a> [ip\_for\_remote\_access](#input\_ip\_for\_remote\_access) | This is the same as 'cidrs\_for\_remote\_access' but without the /32 on each of the files. The 'ip\_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over | `list(any)` | n/a | yes |
 | <a name="input_key_vault_rg_name"></a> [key\_vault\_rg\_name](#input\_key\_vault\_rg\_name) | Key Vault resource group name | `string` | `"keyvault-rg-01"` | no |
+| <a name="input_linux_domain_join_script_path"></a> [linux\_domain\_join\_script\_path](#input\_linux\_domain\_join\_script\_path) | Path to the shellscript that joins a Linux VM to a domain. | `string` | `"none"` | no |
+| <a name="input_linux_monitor_agent_script_path"></a> [linux\_monitor\_agent\_script\_path](#input\_linux\_monitor\_agent\_script\_path) | Path to the shellscript that installs Azure Monitor to a Linux VM. | `string` | `"none"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location/region to create resources in | `string` | n/a | yes |
 | <a name="input_location_abbreviation"></a> [location\_abbreviation](#input\_location\_abbreviation) | The  Azure location/region in 4 letter code | `string` | n/a | yes |
 | <a name="input_mgmt_rg_name"></a> [mgmt\_rg\_name](#input\_mgmt\_rg\_name) | Management plane resource group name | `string` | `"management-rg-1"` | no |

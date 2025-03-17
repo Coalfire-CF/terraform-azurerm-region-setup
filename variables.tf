@@ -177,3 +177,15 @@ variable "network_watcher_name" {
   description = "(Optional) Custom name for the Azure Network Watcher"
   default     = "default"
 }
+
+variable "linux_domain_join_script_path" {
+  type        = string
+  description = "Path to the shellscript that joins a Linux VM to a domain."
+  default     = "none"
+}
+
+variable "linux_monitor_agent_script_path" {
+  type        = string
+  description = "Path to the shellscript that installs Azure Monitor to a Linux VM."
+  default     = "none"
+}

@@ -19,33 +19,26 @@ module "installs_sa" {
     "shellscripts", "install-files"
   ]
 }
-#Commenting out till we decide on a direction for where to store shell scripts
+
 
 resource "azurerm_storage_blob" "linb_domainjoin" {
-  count                  = var.linux_domain_join_script_path != "none" ? 1 : 0 #example conditional
+  count                  = var.linux_domain_join_script_path != "none" ? 1 : 0 
   name                   = "ud_linux_join_ad.sh"
-  storage_account_name   = module.installs_sa.name # this will need to be updated to something like module.installs_sa.azurerm_storage_account etc
+  storage_account_name   = module.installs_sa.name 
   storage_container_name = "shellscripts"
   type                   = "Block"
   source                 = var.linux_domain_join_script_path
 }
 
-# resource "azurerm_storage_blob" "linb_monitor_agent" {
-#   name                   = "ud_linux_monitor_agent.sh"
-#   storage_account_name   = azurerm_storage_account.install_blob.name # this will need to be updated to something like module.installs_sa.azurerm_storage_account etc
-#   storage_container_name = "shellscripts"
-#   type                   = "Block"
-#   source                 = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh" ## see above
-# }
+resource "azurerm_storage_blob" "linb_monitor_agent" {
+  count                  = var.linux_monitor_agent_script_path != "none" ? 1 : 0
+  name                   = "ud_linux_monitor_agent.sh"
+  storage_account_name   = module.installs_sa.name 
+  storage_container_name = "shellscripts"
+  type                   = "Block"
+  source                 = var.linux_monitor_agent_script_path 
+}
 
-# TODOs
 
-# Create input var for file path to ud_linux_join_ad.sh
-
-# Create input var for file path to ud_linux_monitor_agent.sh
-
-# uncomment the storage blob resources above
-
-# make the above storage blob resources conditional on the input var (see above example conditional)
 
 # Update README to document new optional variables

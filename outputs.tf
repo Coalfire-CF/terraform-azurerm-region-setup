@@ -98,8 +98,8 @@ output "additional_resource_groups" {
 # only output these values if the blobs were created.
 # Else, output null
 output "linux_domainjoin_url" {
-  value = length(azurerm_storage_blob.linux_domainjoin[0].url) > 0 ? azurerm_storage_blob.linux_domainjoin[0].url : null
+  value = length(azurerm_storage_blob.linux_domainjoin[0]) > 0 ? azurerm_storage_blob.linux_domainjoin[0].url : null
 }
 output "linux_monitor_agent_url" {
-  value = length(azurerm_storage_blob.linux_monitor_agent[0].url) > 0 ? azurerm_storage_blob.linux_monitor_agent[0].url : null
+  value = length(azurerm_storage_blob.linux_monitor_agent[0]) > 0 ? azurerm_storage_blob.linux_monitor_agent[0].url : null
 }

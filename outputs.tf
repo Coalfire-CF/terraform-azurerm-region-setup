@@ -98,7 +98,7 @@ output "additional_resource_groups" {
 # only output these values if the blobs were created.
 # Else, output null
 output "linux_domainjoin_url" {
-  value = var.linux_domain_join_script_path != "none" ? azurerm_storage_blob.linux_domainjoin[0].url : null
+  value = one(azurerm_storage_blob.linux_domainjoin[*].url)
 }
 output "linux_monitor_agent_url" {
   value = one(azurerm_storage_blob.linux_monitor_agent[*].url)

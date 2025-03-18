@@ -147,8 +147,9 @@ module "setup" {
 
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
-If no shellscript uploads are defined, terraform will not create any resources, and not define any outputs. However, if script uploads are created, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL. For example: 
+If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL: 
 ```hcl
+# Example Output
 file_upload_urls = {
   "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
   "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"

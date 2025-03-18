@@ -92,3 +92,14 @@ output "network_watcher_name" {
 output "additional_resource_groups" {
   value = { for group in azurerm_resource_group.additional_resource_groups : group.name => group.id }
 }
+
+# Shellscript URLs
+# Since these resources are optional,
+# only output these values if the blobs were created.
+# Else, output null
+output "linux_domainjoin_url" {
+  value = one(azurerm_storage_blob.linux_domainjoin[*].url)
+}
+output "linux_monitor_agent_url" {
+  value = one(azurerm_storage_blob.linux_monitor_agent[*].url)
+}

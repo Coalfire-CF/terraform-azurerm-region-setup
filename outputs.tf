@@ -113,5 +113,5 @@ output "linux_monitor_agent_url" {
 #   })
 # }
 output "file_uploads" {
-  value = { for upload in azurerm_storage_blob.file_upload : trimsuffix(upload.name, ".") => upload.url }
+  value = { for upload in azurerm_storage_blob.file_upload : trimsuffix(upload.name, ".*") => upload.url }
 }

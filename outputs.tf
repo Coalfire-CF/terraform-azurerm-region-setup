@@ -104,11 +104,14 @@ output "linux_monitor_agent_url" {
   value = one(azurerm_storage_blob.linux_monitor_agent[*].url)
 }
 
+# output "file_uploads" {
+#   value = tomap({
+#     for name, upload in azurerm_storage_blob.file_upload : upload.name => {
+#       filename = upload.name
+#       url      = upload.url
+#     }
+#   })
+# }
 output "file_uploads" {
-  value = tomap({
-    for k, upload in azurerm_storage_blob.file_upload : k => {
-      filename = upload.name
-      url      = upload.url
-    }
-  })
+  value = { for upload in azurerm_storage_blob.file_upload : upload.name => upload.url }
 }

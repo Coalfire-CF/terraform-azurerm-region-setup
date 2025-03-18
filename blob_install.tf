@@ -16,7 +16,7 @@ module "installs_sa" {
   enable_customer_managed_key   = true
   cmk_key_vault_id              = var.core_kv_id
   storage_containers = [
-    "shellscripts", "install-files"
+    "shellscripts", "install-files", "uploads"
   ]
 }
 

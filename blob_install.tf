@@ -21,7 +21,7 @@ module "installs_sa" {
 }
 
 resource "azurerm_storage_blob" "file_upload" {
-  # for_each = var.file_upload_paths
+  depends_on             = [module.installs_sa]
   count                  = length(var.file_upload_paths)
   name                   = basename(var.file_upload_paths[count.index])
   storage_account_name   = module.installs_sa.name

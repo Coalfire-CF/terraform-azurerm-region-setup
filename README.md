@@ -110,7 +110,7 @@ module "setup" {
 ```
 
 
-### Custom resource names
+### (Optional) Custom resource names
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -129,30 +129,32 @@ module "setup" {
 
 ```
 
-### File uploads
-Installation shellscripts may be uploaded to blob storage by specifying their paths.
+### (Optional) File uploads
+Installation shellscripts and other files may be uploaded to blob storage by specifying their paths.
 
-Currently, the following explicitly named uploads are supported:
- - Linux domain join script
- - Linux install script for Azure Monitor Agent
-
-To upload scripts, set any or all of the following arguments to the file path where the relevant script is located:
+The `file_upload_paths` argument accepts a list of any number of paths. The file at each path will be uploaded to the `uploads` container in the installs storage account. In the example below, two scripts are uploaded:
 
 ```hcl
 module "setup" {
 ...
-linux_domain_join_script_path   = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
-linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
+ file_upload_paths = [
+    "../../../../shellscripts/linux/linux_join_ad.sh",
+    "../../../../shellscripts/linux/linux_monitor_agent.sh"
+  ]
 ...
 }
 ```
 
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
-If no shellscript uploads are defined, terraform will not create any resources, and not define any outputs. However, if script uploads are set, the following outputs are defined:
-- `linux_domainjoin_url`
-- `linux_monitor_agent_url`
-
+If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL: 
+```hcl
+# Example Output
+file_upload_urls = {
+  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
+  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+}
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -193,8 +195,7 @@ If no shellscript uploads are defined, terraform will not create any resources, 
 | [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
-| [azurerm_storage_blob.linux_domainjoin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
-| [azurerm_storage_blob.linux_monitor_agent](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
+| [azurerm_storage_blob.file_upload](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
 | [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
 
 ## Inputs
@@ -210,14 +211,13 @@ If no shellscript uploads are defined, terraform will not create any resources, 
 | <a name="input_core_kv_id"></a> [core\_kv\_id](#input\_core\_kv\_id) | n/a | `string` | n/a | yes |
 | <a name="input_diag_log_analytics_id"></a> [diag\_log\_analytics\_id](#input\_diag\_log\_analytics\_id) | ID of the Log Analytics Workspace diagnostic logs should be sent to | `string` | n/a | yes |
 | <a name="input_docs_storageaccount_name"></a> [docs\_storageaccount\_name](#input\_docs\_storageaccount\_name) | (Optional) Custom name for the Documents Storage Account | `string` | `"default"` | no |
+| <a name="input_file_upload_paths"></a> [file\_upload\_paths](#input\_file\_upload\_paths) | A list of paths to files which will be uploaded to the installs storage account | `list(string)` | `[]` | no |
 | <a name="input_flowlogs_storageaccount_name"></a> [flowlogs\_storageaccount\_name](#input\_flowlogs\_storageaccount\_name) | (Optional) Custom name for the Flow Logs Storage Account | `string` | `"default"` | no |
 | <a name="input_fw_virtual_network_subnet_ids"></a> [fw\_virtual\_network\_subnet\_ids](#input\_fw\_virtual\_network\_subnet\_ids) | List of subnet ids for the firewall | `list(string)` | `[]` | no |
 | <a name="input_global_tags"></a> [global\_tags](#input\_global\_tags) | Global level tags | `map(string)` | n/a | yes |
 | <a name="input_installs_storageaccount_name"></a> [installs\_storageaccount\_name](#input\_installs\_storageaccount\_name) | (Optional) Custom name for the Installs Storage Account | `string` | `"default"` | no |
 | <a name="input_ip_for_remote_access"></a> [ip\_for\_remote\_access](#input\_ip\_for\_remote\_access) | This is the same as 'cidrs\_for\_remote\_access' but without the /32 on each of the files. The 'ip\_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over | `list(any)` | n/a | yes |
 | <a name="input_key_vault_rg_name"></a> [key\_vault\_rg\_name](#input\_key\_vault\_rg\_name) | Key Vault resource group name | `string` | `"keyvault-rg-01"` | no |
-| <a name="input_linux_domain_join_script_path"></a> [linux\_domain\_join\_script\_path](#input\_linux\_domain\_join\_script\_path) | Path to the shellscript that joins a Linux VM to a domain. | `string` | `"none"` | no |
-| <a name="input_linux_monitor_agent_script_path"></a> [linux\_monitor\_agent\_script\_path](#input\_linux\_monitor\_agent\_script\_path) | Path to the shellscript that installs Azure Monitor to a Linux VM. | `string` | `"none"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location/region to create resources in | `string` | n/a | yes |
 | <a name="input_location_abbreviation"></a> [location\_abbreviation](#input\_location\_abbreviation) | The  Azure location/region in 4 letter code | `string` | n/a | yes |
 | <a name="input_mgmt_rg_name"></a> [mgmt\_rg\_name](#input\_mgmt\_rg\_name) | Management plane resource group name | `string` | `"management-rg-1"` | no |
@@ -235,12 +235,11 @@ If no shellscript uploads are defined, terraform will not create any resources, 
 |------|-------------|
 | <a name="output_additional_resource_groups"></a> [additional\_resource\_groups](#output\_additional\_resource\_groups) | n/a |
 | <a name="output_application_rg_name"></a> [application\_rg\_name](#output\_application\_rg\_name) | n/a |
+| <a name="output_file_uploads"></a> [file\_uploads](#output\_file\_uploads) | n/a |
 | <a name="output_installs_container_id"></a> [installs\_container\_id](#output\_installs\_container\_id) | n/a |
 | <a name="output_installs_container_name"></a> [installs\_container\_name](#output\_installs\_container\_name) | n/a |
 | <a name="output_key_vault_rg_id"></a> [key\_vault\_rg\_id](#output\_key\_vault\_rg\_id) | n/a |
 | <a name="output_key_vault_rg_name"></a> [key\_vault\_rg\_name](#output\_key\_vault\_rg\_name) | n/a |
-| <a name="output_linux_domainjoin_url"></a> [linux\_domainjoin\_url](#output\_linux\_domainjoin\_url) | Shellscript URLs Since these resources are optional, only output these values if the blobs were created. Else, output null |
-| <a name="output_linux_monitor_agent_url"></a> [linux\_monitor\_agent\_url](#output\_linux\_monitor\_agent\_url) | n/a |
 | <a name="output_management_rg_name"></a> [management\_rg\_name](#output\_management\_rg\_name) | n/a |
 | <a name="output_network_rg_name"></a> [network\_rg\_name](#output\_network\_rg\_name) | n/a |
 | <a name="output_network_watcher_name"></a> [network\_watcher\_name](#output\_network\_watcher\_name) | n/a |

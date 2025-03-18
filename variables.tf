@@ -178,14 +178,8 @@ variable "network_watcher_name" {
   default     = "default"
 }
 
-variable "linux_domain_join_script_path" {
-  type        = string
-  description = "Path to the shellscript that joins a Linux VM to a domain."
-  default     = "none"
-}
-
-variable "linux_monitor_agent_script_path" {
-  type        = string
-  description = "Path to the shellscript that installs Azure Monitor to a Linux VM."
-  default     = "none"
+variable "file_upload_paths" {
+  type        = list(string)
+  description = "A list of paths to files which will be uploaded to the installs storage account"
+  default     = []
 }

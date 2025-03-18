@@ -16,28 +16,18 @@ module "installs_sa" {
   enable_customer_managed_key   = true
   cmk_key_vault_id              = var.core_kv_id
   storage_containers = [
-    "shellscripts", "install-files"
+    "shellscripts", "install-files", "uploads"
   ]
 }
 
-resource "azurerm_storage_blob" "linux_domainjoin" {
-  count                  = var.linux_domain_join_script_path != "none" ? 1 : 0
-  name                   = basename(var.linux_domain_join_script_path)
+resource "azurerm_storage_blob" "file_upload" {
+  depends_on             = [module.installs_sa]
+  count                  = length(var.file_upload_paths)
+  name                   = basename(var.file_upload_paths[count.index])
   storage_account_name   = module.installs_sa.name
-  storage_container_name = "shellscripts"
+  storage_container_name = "uploads"
   type                   = "Block"
-  source                 = var.linux_domain_join_script_path
+  source                 = var.file_upload_paths[count.index]
 }
-
-resource "azurerm_storage_blob" "linux_monitor_agent" {
-  count                  = var.linux_monitor_agent_script_path != "none" ? 1 : 0
-  name                   = basename(var.linux_monitor_agent_script_path)
-  storage_account_name   = module.installs_sa.name
-  storage_container_name = "shellscripts"
-  type                   = "Block"
-  source                 = var.linux_monitor_agent_script_path
-}
-
-
 
 

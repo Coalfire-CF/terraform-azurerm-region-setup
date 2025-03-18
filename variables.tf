@@ -189,3 +189,9 @@ variable "linux_monitor_agent_script_path" {
   description = "Path to the shellscript that installs Azure Monitor to a Linux VM."
   default     = "none"
 }
+
+variable "file_upload_paths" {
+  type        = list(string)
+  description = "A list of paths to files which will be uploaded to the installs storage account"
+  default     = []
+}

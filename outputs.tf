@@ -103,3 +103,12 @@ output "linux_domainjoin_url" {
 output "linux_monitor_agent_url" {
   value = one(azurerm_storage_blob.linux_monitor_agent[*].url)
 }
+
+output "file_uploads" {
+  value = tomap({
+    for k, upload in azurerm_storage_blob.file_upload : k => {
+      filename = upload.name
+      url      = upload.url
+    }
+  })
+}

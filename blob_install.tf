@@ -38,6 +38,13 @@ resource "azurerm_storage_blob" "linux_monitor_agent" {
   source                 = var.linux_monitor_agent_script_path
 }
 
-
+resource "azurerm_storage_blob" "file_upload" {
+  for_each               = var.file_upload_paths
+  name                   = basename(each.value)
+  storage_account_name   = module.installs_sa.name
+  storage_container_name = "shellscripts"
+  type                   = "Block"
+  source                 = var.linux_monitor_agent_script_path
+}
 
 

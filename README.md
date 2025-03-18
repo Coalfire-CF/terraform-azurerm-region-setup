@@ -110,7 +110,7 @@ module "setup" {
 ```
 
 
-### Custom resource names
+### (Optional) Custom resource names
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -129,30 +129,31 @@ module "setup" {
 
 ```
 
-### File uploads
-Installation shellscripts may be uploaded to blob storage by specifying their paths.
+### (Optional) File uploads
+Installation shellscripts and other files may be uploaded to blob storage by specifying their paths.
 
-Currently, the following explicitly named uploads are supported:
- - Linux domain join script
- - Linux install script for Azure Monitor Agent
-
-To upload scripts, set any or all of the following arguments to the file path where the relevant script is located:
+The `file_upload_paths` argument accepts a list of any number of paths. The file at each path will be uploaded to the `uploads` container in the installs storage account. In the example below, two scripts are uploaded:
 
 ```hcl
 module "setup" {
 ...
-linux_domain_join_script_path   = "../../../../shellscripts/linux/ud_linux_join_ad.sh"
-linux_monitor_agent_script_path = "../../../../shellscripts/linux/ud_linux_monitor_agent.sh"
+ file_upload_paths = [
+    "../../../../shellscripts/linux/linux_join_ad.sh",
+    "../../../../shellscripts/linux/linux_monitor_agent.sh"
+  ]
 ...
 }
 ```
 
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
-If no shellscript uploads are defined, terraform will not create any resources, and not define any outputs. However, if script uploads are set, the following outputs are defined:
-- `linux_domainjoin_url`
-- `linux_monitor_agent_url`
-
+If no shellscript uploads are defined, terraform will not create any resources, and not define any outputs. However, if script uploads are created, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL. For example: 
+```hcl
+file_upload_urls = {
+  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
+  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+}
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

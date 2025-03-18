@@ -25,7 +25,7 @@ resource "azurerm_storage_blob" "file_upload" {
   count                  = length(var.file_upload_paths)
   name                   = basename(var.file_upload_paths[count.index])
   storage_account_name   = module.installs_sa.name
-  storage_container_name = "shellscripts"
+  storage_container_name = "uploads"
   type                   = "Block"
   source                 = var.file_upload_paths[count.index]
 }

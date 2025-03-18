@@ -45,7 +45,7 @@ resource "azurerm_storage_blob" "file_upload" {
   storage_account_name   = module.installs_sa.name
   storage_container_name = "shellscripts"
   type                   = "Block"
-  source                 = var.linux_monitor_agent_script_path
+  source                 = var.var.file_upload_paths[count.index]
 }
 
 

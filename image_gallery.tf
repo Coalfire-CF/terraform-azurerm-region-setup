@@ -18,6 +18,7 @@ resource "azurerm_shared_image" "images" {
   resource_group_name = azurerm_resource_group.management.name
   location            = var.location
   os_type             = each.value.os_type
+  hyper_v_generation  = each.value.hyper_v_generation
   identifier {
     publisher = each.value.identifier_publisher
     offer     = each.value.identifier_offer

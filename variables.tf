@@ -191,6 +191,7 @@ variable "vm_image_definitions" {
     identifier_publisher = string
     identifier_offer     = string
     identifier_sku       = string
+    hyper_v_generation   = string
   }))
   default = []
 }

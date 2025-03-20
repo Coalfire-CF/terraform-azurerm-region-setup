@@ -264,7 +264,7 @@ vm_image_definitions = {
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Name prefix used for resources | `string` | n/a | yes |
 | <a name="input_sas_end_date"></a> [sas\_end\_date](#input\_sas\_end\_date) | value | `string` | n/a | yes |
 | <a name="input_sas_start_date"></a> [sas\_start\_date](#input\_sas\_start\_date) | value | `string` | n/a | yes |
-| <a name="input_vm_image_definitions"></a> [vm\_image\_definitions](#input\_vm\_image\_definitions) | n/a | <pre>list(object({<br/>    name                 = string<br/>    os_type              = string<br/>    identifier_publisher = string<br/>    identifier_offer     = string<br/>    identifier_sku       = string<br/>  }))</pre> | `[]` | no |
+| <a name="input_vm_image_definitions"></a> [vm\_image\_definitions](#input\_vm\_image\_definitions) | n/a | <pre>list(object({<br/>    name                 = string<br/>    os_type              = string<br/>    identifier_publisher = string<br/>    identifier_offer     = string<br/>    identifier_sku       = string<br/>    hyper_v_generation   = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_vmdiag_storageaccount_name"></a> [vmdiag\_storageaccount\_name](#input\_vmdiag\_storageaccount\_name) | (Optional) Custom name for the VM Diagnostic Logs Storage Account | `string` | `"default"` | no |
 
 ## Outputs

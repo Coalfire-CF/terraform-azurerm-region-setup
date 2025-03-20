@@ -108,9 +108,10 @@ module "setup" {
 }
 
 ```
+## Optional arguments
+This module accepts a number of additional arguments to modify resource deployments.
 
-
-### (Optional) Custom resource names
+### Custom resource names
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -129,7 +130,7 @@ module "setup" {
 
 ```
 
-### (Optional) File uploads
+### File uploads
 Installation shellscripts and other files may be uploaded to blob storage by specifying their paths.
 
 The `file_upload_paths` argument accepts a list of any number of paths. The file at each path will be uploaded to the `uploads` container in the installs storage account. In the example below, two scripts are uploaded:
@@ -153,6 +154,39 @@ If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of
 file_upload_urls = {
   "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
   "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+}
+```
+
+### Azure Compute Gallery (Image Gallery) Image Definitions
+Any number of VM image definitions may be bootstapped in the Azure Compute Gallery by specifying `vm_image_definitions` as shown in the example below:
+```hcl
+  module "setup" {
+  ...
+  vm_image_definitions = [
+    {
+      name                 = "rhel-8-10-golden-stig"
+      os_type              = "Linux"
+      identifier_publisher = "rhel"
+      identifier_offer     = "LinuxServer"
+      identifier_sku       = "RHEL8-10"
+    },
+    {
+      name                 = "win-server2022-golden"
+      os_type              = "Windows"
+      identifier_publisher = "microsoft"
+      identifier_offer     = "WindowsServer"
+      identifier_sku       = "2022-datacenter-g2"
+    }
+  ]
+}
+```
+
+If `vm_image_definitions` is defined, the module will output a key-value map of all VM image definitions, where the key is the image name and the value is the image ID: 
+```hcl
+# Example Output
+vm_image_definitions = {
+  "rhel-8-10-golden-stig" = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.Compute/galleries/<gallery_name>/images/rhel-8-10-golden-stig"
+  "win-server2022-golden" = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.Compute/galleries/<gallery_name>/images/win-server2022-golden"
 }
 ```
 
@@ -192,6 +226,7 @@ file_upload_urls = {
 | [azurerm_resource_group.management](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_resource_group.network](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_role_assignment.tstate_kv_crypto_user_cloudshell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_shared_image.images](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
 | [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
@@ -227,6 +262,7 @@ file_upload_urls = {
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Name prefix used for resources | `string` | n/a | yes |
 | <a name="input_sas_end_date"></a> [sas\_end\_date](#input\_sas\_end\_date) | value | `string` | n/a | yes |
 | <a name="input_sas_start_date"></a> [sas\_start\_date](#input\_sas\_start\_date) | value | `string` | n/a | yes |
+| <a name="input_vm_image_definitions"></a> [vm\_image\_definitions](#input\_vm\_image\_definitions) | n/a | <pre>list(object({<br/>    name                 = string<br/>    os_type              = string<br/>    identifier_publisher = string<br/>    identifier_offer     = string<br/>    identifier_sku       = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_vmdiag_storageaccount_name"></a> [vmdiag\_storageaccount\_name](#input\_vmdiag\_storageaccount\_name) | (Optional) Custom name for the VM Diagnostic Logs Storage Account | `string` | `"default"` | no |
 
 ## Outputs
@@ -255,6 +291,7 @@ file_upload_urls = {
 | <a name="output_storage_account_vm_diag_sas"></a> [storage\_account\_vm\_diag\_sas](#output\_storage\_account\_vm\_diag\_sas) | n/a |
 | <a name="output_storage_account_vmdiag_id"></a> [storage\_account\_vmdiag\_id](#output\_storage\_account\_vmdiag\_id) | n/a |
 | <a name="output_storage_account_vmdiag_name"></a> [storage\_account\_vmdiag\_name](#output\_storage\_account\_vmdiag\_name) | n/a |
+| <a name="output_vm_image_definitions"></a> [vm\_image\_definitions](#output\_vm\_image\_definitions) | n/a |
 | <a name="output_vmdiag_endpoint"></a> [vmdiag\_endpoint](#output\_vmdiag\_endpoint) | n/a |
 <!-- END_TF_DOCS -->
 

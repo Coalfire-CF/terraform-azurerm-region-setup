@@ -96,3 +96,7 @@ output "additional_resource_groups" {
 output "file_uploads" {
   value = { for upload in azurerm_storage_blob.file_upload : replace(upload.name, "/\\.[^\\/\\.]+$/", "") => upload.url }
 }
+
+output "vm_image_definitions" {
+  value = { for def in azurerm_shared_image.images : def.name => def.id }
+}

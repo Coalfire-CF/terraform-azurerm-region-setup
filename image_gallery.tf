@@ -14,9 +14,9 @@ resource "azurerm_shared_image" "images" {
   depends_on          = [azurerm_shared_image_gallery.marketplaceimages]
   for_each            = { for def in var.vm_image_definitions : def.name => def }
   name                = each.value.name
-  gallery_name        = each.value.gallery_name
-  resource_group_name = each.value.resource_group_name
-  location            = each.value.location
+  gallery_name        = azurerm_shared_image_gallery.marketplaceimages.name
+  resource_group_name = azurerm_resource_group.management.name
+  location            = var.location
   os_type             = each.value.os_type
   identifier {
     publisher = each.value.identifier_publisher

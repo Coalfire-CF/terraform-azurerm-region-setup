@@ -187,9 +187,6 @@ variable "file_upload_paths" {
 variable "vm_image_definitions" {
   type = list(object({
     name                 = string
-    gallery_name         = string
-    resource_group_name  = string
-    location             = string
     os_type              = string
     identifier_publisher = string
     identifier_offer     = string

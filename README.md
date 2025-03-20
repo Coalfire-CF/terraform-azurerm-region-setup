@@ -181,6 +181,15 @@ Any number of VM image definitions may be bootstapped in the Azure Compute Galle
 }
 ```
 
+If `vm_image_definitions` is defined, the module will output a key-value map of all VM image definitions, where the key is the image name and the value is the image ID: 
+```hcl
+# Example Output
+vm_image_definitions = {
+  "rhel-8-10-golden-stig" = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.Compute/galleries/<gallery_name>/images/rhel-8-10-golden-stig"
+  "win-server2022-golden" = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.Compute/galleries/<gallery_name>/images/win-server2022-golden"
+}
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

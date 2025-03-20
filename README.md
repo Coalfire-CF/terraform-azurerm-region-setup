@@ -108,9 +108,10 @@ module "setup" {
 }
 
 ```
+## Optional arguments
+This module accepts a number of additional arguments to modify resource deployments.
 
-
-### (Optional) Custom resource names
+### Custom resource names
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -129,7 +130,7 @@ module "setup" {
 
 ```
 
-### (Optional) File uploads
+### File uploads
 Installation shellscripts and other files may be uploaded to blob storage by specifying their paths.
 
 The `file_upload_paths` argument accepts a list of any number of paths. The file at each path will be uploaded to the `uploads` container in the installs storage account. In the example below, two scripts are uploaded:
@@ -153,6 +154,30 @@ If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of
 file_upload_urls = {
   "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
   "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+}
+```
+
+### Azure Compute Gallery (Image Gallery) Image Definitions
+Any number of VM image definitions may be bootstapped in the Azure Compute Gallery by specifying `vm_image_definitions` as shown in the example below:
+```hcl
+  module "setup" {
+  ...
+  vm_image_definitions = [
+    {
+      name                 = "rhel-8-10-golden-stig"
+      os_type              = "Linux"
+      identifier_publisher = "rhel"
+      identifier_offer     = "LinuxServer"
+      identifier_sku       = "RHEL8-10"
+    },
+    {
+      name                 = "win-server2022-golden"
+      os_type              = "Windows"
+      identifier_publisher = "microsoft"
+      identifier_offer     = "WindowsServer"
+      identifier_sku       = "2022-datacenter-g2"
+    }
+  ]
 }
 ```
 

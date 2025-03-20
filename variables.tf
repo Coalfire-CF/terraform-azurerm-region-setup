@@ -183,3 +183,17 @@ variable "file_upload_paths" {
   description = "A list of paths to files which will be uploaded to the installs storage account"
   default     = []
 }
+
+variable "vm_image_definitions" {
+  type = list(object({
+    name                 = string
+    gallery_name         = string
+    resource_group_name  = string
+    location             = string
+    os_type              = string
+    identifier_publisher = string
+    identifier_offer     = string
+    identifier_sku       = string
+  }))
+  default = []
+}

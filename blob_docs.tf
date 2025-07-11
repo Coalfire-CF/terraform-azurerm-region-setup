@@ -12,7 +12,7 @@ module "docs_sa" {
     Plane    = "Management"
   }, var.global_tags, var.regional_tags)
 
-  public_network_access_enabled = true
+  public_network_access_enabled = var.enable_sa_public_access
   enable_customer_managed_key   = true
   cmk_key_vault_id              = var.core_kv_id
   storage_containers = [

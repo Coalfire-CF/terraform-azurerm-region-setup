@@ -248,6 +248,7 @@ vm_image_definitions = {
 | <a name="input_core_kv_id"></a> [core\_kv\_id](#input\_core\_kv\_id) | n/a | `string` | n/a | yes |
 | <a name="input_diag_log_analytics_id"></a> [diag\_log\_analytics\_id](#input\_diag\_log\_analytics\_id) | ID of the Log Analytics Workspace diagnostic logs should be sent to | `string` | n/a | yes |
 | <a name="input_docs_storageaccount_name"></a> [docs\_storageaccount\_name](#input\_docs\_storageaccount\_name) | (Optional) Custom name for the Documents Storage Account | `string` | `"default"` | no |
+| <a name="input_enable_sa_public_access"></a> [enable\_sa\_public\_access](#input\_enable\_sa\_public\_access) | n/a | `bool` | `true` | no |
 | <a name="input_file_upload_paths"></a> [file\_upload\_paths](#input\_file\_upload\_paths) | A list of paths to files which will be uploaded to the installs storage account | `list(string)` | `[]` | no |
 | <a name="input_flowlogs_storageaccount_name"></a> [flowlogs\_storageaccount\_name](#input\_flowlogs\_storageaccount\_name) | (Optional) Custom name for the Flow Logs Storage Account | `string` | `"default"` | no |
 | <a name="input_fw_virtual_network_subnet_ids"></a> [fw\_virtual\_network\_subnet\_ids](#input\_fw\_virtual\_network\_subnet\_ids) | List of subnet ids for the firewall | `list(string)` | `[]` | no |

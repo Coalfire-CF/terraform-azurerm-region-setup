@@ -195,3 +195,8 @@ variable "vm_image_definitions" {
   }))
   default = []
 }
+
+variable "enable_sa_public_access" {
+  type    = bool
+  default = true
+}

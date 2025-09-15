@@ -85,10 +85,6 @@ output "application_rg_name" {
   value = azurerm_resource_group.application.name
 }
 
-output "network_watcher_name" {
-  value = azurerm_network_watcher.fr_network_watcher.name
-}
-
 output "additional_resource_groups" {
   value = { for group in azurerm_resource_group.additional_resource_groups : group.name => group.id }
 }

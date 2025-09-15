@@ -46,7 +46,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_cloudShell_cmk" 
 }
 
 module "diag_cloudshell_sa" {
-  source                = "github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v1.0.0"
+  source                = "git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v1.0.0"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.cloudShell.id
   resource_type         = "sa"

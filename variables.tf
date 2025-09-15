@@ -192,6 +192,12 @@ variable "vm_image_definitions" {
     identifier_offer     = string
     identifier_sku       = string
     hyper_v_generation   = string
+    managed_image_id     = optional(string, null) # Optional: source for image version
+
+    # Make purchase_plan attributes optional
+    purchase_plan_name      = optional(string)
+    purchase_plan_publisher = optional(string)
+    purchase_plan_product   = optional(string)
   }))
   default = []
 }
@@ -199,4 +205,22 @@ variable "vm_image_definitions" {
 variable "enable_sa_public_access" {
   type    = bool
   default = true
+}
+
+variable "network_watcher_enabled" {
+  type        = bool
+  description = "Enable Network Watcher in the region"
+  default     = true
+}
+
+variable "regional_replica_count" {
+  type = number
+  description = "The number of replicas of the Shared Image Gallery to be created in the target region. Must be between 1 and 5."
+  default = 1
+}
+
+variable "storage_account_type" {
+  type = string
+  description = "The type of storage account to use for the Shared Image Gallery. Possible values are Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS"
+  default = "Standard_LRS"
 }

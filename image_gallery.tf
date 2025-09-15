@@ -19,7 +19,7 @@ resource "azurerm_shared_image" "images" {
   location            = var.location
   os_type             = each.value.os_type
   hyper_v_generation  = each.value.hyper_v_generation
-  #architecture = 
+  architecture        = var.architecture 
   
   identifier {
     publisher = each.value.identifier_publisher

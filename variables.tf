@@ -214,6 +214,12 @@ variable "image_version_name" {
   default = "1.0.0"
 }
 
+variable "architecture" {
+  type = string
+  description = "CPU architecture supported by an OS. Possbile values x64 and Arm64"
+  default = "x64"
+}
+
 variable "enable_sa_public_access" {
   type    = bool
   default = true

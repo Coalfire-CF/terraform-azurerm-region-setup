@@ -202,6 +202,18 @@ variable "vm_image_definitions" {
   default = []
 }
 
+variable "image_gallery_description" {
+  type = string
+  description = "Description of the Shared Image Gallery to be created]"
+  default = "Images for FedRAMP Environment"
+}
+
+variable "image_version_name" {
+  type = string
+  description = "The name of the image version to be created"
+  default = "1.0.0"
+}
+
 variable "enable_sa_public_access" {
   type    = bool
   default = true

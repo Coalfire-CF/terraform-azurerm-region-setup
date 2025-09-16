@@ -69,6 +69,10 @@ output "management_rg_name" {
   value = azurerm_resource_group.management.name
 }
 
+output "network_rg_name" {
+  value = azurerm_resource_group.network.name
+}
+
 output "network_watcher_name" {
   value = try(azurerm_network_watcher.fr_network_watcher[0].name, "Network Watcher not created")
 }

@@ -40,21 +40,16 @@ output "vmdiag_endpoint" {
 }
 
 output "shellscripts_container_id" {
-  #value = azurerm_storage_container.shellscripts_container.id
   value = module.installs_sa.container_ids["shellscripts"]
 
 }
 
 output "installs_container_id" {
-  #value = azurerm_storage_container.installfile_container.id
   value = module.installs_sa.container_ids["install-files"]
-
 }
 
 output "installs_container_name" {
-  #value = azurerm_storage_container.installfile_container.name
   value = module.installs_sa.container_names["install-files"]
-
 }
 
 output "storage_account_ars_id" {
@@ -73,6 +68,10 @@ output "network_rg_name" {
   value = azurerm_resource_group.network.name
 }
 
+output "network_watcher_name" {
+  value = try(azurerm_network_watcher.fr_network_watcher[0].name, "Network Watcher not created")
+}
+
 output "key_vault_rg_name" {
   value = azurerm_resource_group.key_vault.name
 }
@@ -83,10 +82,6 @@ output "key_vault_rg_id" {
 
 output "application_rg_name" {
   value = azurerm_resource_group.application.name
-}
-
-output "network_watcher_name" {
-  value = azurerm_network_watcher.fr_network_watcher.name
 }
 
 output "additional_resource_groups" {

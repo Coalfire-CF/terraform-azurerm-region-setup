@@ -1,5 +1,5 @@
 module "installs_sa" {
-  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=fix/storage-cmk"
+  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.1.0"
   name                       = local.installs_storageaccount_name
   resource_group_name        = var.mgmt_rg_name
   location                   = var.location

@@ -1,5 +1,5 @@
 module "vm_diag" {
-  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=fix/storage-cmk"
+  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.1.0"
   name                       = local.vmdiag_storageaccount_name
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location

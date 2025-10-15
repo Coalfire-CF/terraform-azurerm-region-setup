@@ -242,3 +242,34 @@ variable "storage_account_type" {
   description = "The type of storage account to use for the Shared Image Gallery. Possible values are Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS"
   default = "Standard_LRS"
 }
+
+## Key Vault CMK Key Names (optional overrides) ##
+variable "ars_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the ARS Storage Account"
+  default     = null
+}
+
+variable "docs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Documents Storage Account"
+  default     = null
+}
+
+variable "flowlogs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Flow Logs Storage Account"
+  default     = null
+}
+
+variable "installs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Installs Storage Account"
+  default     = null
+}
+
+variable "vmdiag_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the VM Diagnostic Logs Storage Account"
+  default     = null
+}

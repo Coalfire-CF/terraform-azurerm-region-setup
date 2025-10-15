@@ -266,7 +266,6 @@ vm_image_definitions = {
 | <a name="input_key_vault_rg_name"></a> [key\_vault\_rg\_name](#input\_key\_vault\_rg\_name) | Key Vault resource group name | `string` | `"keyvault-rg-01"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location/region to create resources in | `string` | n/a | yes |
 | <a name="input_location_abbreviation"></a> [location\_abbreviation](#input\_location\_abbreviation) | The  Azure location/region in 4 letter code | `string` | n/a | yes |
-| <a name="input_mgmt_rg_name"></a> [mgmt\_rg\_name](#input\_mgmt\_rg\_name) | Management plane resource group name | `string` | `"management-rg-1"` | no |
 | <a name="input_network_watcher_enabled"></a> [network\_watcher\_enabled](#input\_network\_watcher\_enabled) | Enable Network Watcher in the region | `bool` | `true` | no |
 | <a name="input_network_watcher_name"></a> [network\_watcher\_name](#input\_network\_watcher\_name) | (Optional) Custom name for the Azure Network Watcher | `string` | `"default"` | no |
 | <a name="input_networking_rg_name"></a> [networking\_rg\_name](#input\_networking\_rg\_name) | Networking resource group name | `string` | `"networking-rg-01"` | no |

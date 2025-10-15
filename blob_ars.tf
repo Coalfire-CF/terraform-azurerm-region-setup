@@ -1,5 +1,5 @@
 module "ars_sa" {
-  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.0.1"
+  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.0.5"
   name                       = local.ars_storageaccount_name
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location

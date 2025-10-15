@@ -23,6 +23,12 @@ variable "app_abbreviation" {
   type        = string
 }
 
+variable "mgmt_rg_name" {
+  description = "Management plane resource group name"
+  type        = string
+  default     = "management-rg-1"
+}
+
 variable "app_rg_name" {
   description = "Application plane resource group name"
   type        = string

@@ -1,7 +1,7 @@
 module "installs_sa" {
   source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.1.0"
   name                       = local.installs_storageaccount_name
-  resource_group_name        = var.mgmt_rg_name
+  resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location
   account_kind               = "StorageV2"
   ip_rules                   = var.ip_for_remote_access

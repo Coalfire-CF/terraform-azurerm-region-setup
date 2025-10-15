@@ -13,8 +13,8 @@ module "ars_sa" {
     Plane    = "Management"
   }, var.global_tags, var.regional_tags)
 
-  public_network_access_enabled = var.enable_sa_public_access
-  enable_customer_managed_key   = true
+  public_network_access_enabled = var.public_network_access_enabled
+  enable_customer_managed_key   = var.enable_customer_managed_key
   cmk_key_vault_id              = var.core_kv_id
   cmk_key_name                  = var.ars_cmk_key_name
 }

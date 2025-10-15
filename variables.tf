@@ -220,8 +220,15 @@ variable "architecture" {
   default = "x64"
 }
 
-variable "enable_sa_public_access" {
+variable "public_network_access_enabled" {
   type    = bool
+  description = "Enable/Disable public network access for the storage account."
+  default = true
+}
+
+variable "enable_customer_managed_key" {
+  type = bool
+  description = "Enable/Disable Customer Managed Key (CMK) for the storage account."
   default = true
 }
 

@@ -210,7 +210,7 @@ vm_image_definitions = {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.0.1 |
+| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.0.5 |
 | <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics | v1.0.0 |
 | <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.0.1 |
 | <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.0.1 |

@@ -321,3 +321,27 @@ vm_image_definitions = {
 ### Copyright
 
 Copyright © 2023 Coalfire Systems Inc.
+## Tree
+```
+.
+|-- CONTRIBUTING.md
+|-- LICENSE
+|-- License.md
+|-- README.md
+|-- blob_ars.tf
+|-- blob_docs.tf
+|-- blob_flowlog.tf
+|-- blob_install.tf
+|-- blob_vm_diag.tf
+|-- coalfire_logo.png
+|-- image_gallery.tf
+|-- locals.tf
+|-- network_watcher.tf
+|-- outputs.tf
+|-- release-please-config.json
+|-- required_providers.tf
+|-- resource_group.tf
+|-- share_cloudshell.tf
+|-- update-readme-tree.sh
+|-- variables.tf
+```

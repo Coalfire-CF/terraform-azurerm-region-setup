@@ -256,7 +256,6 @@ vm_image_definitions = {
 | <a name="input_file_upload_paths"></a> [file\_upload\_paths](#input\_file\_upload\_paths) | A list of paths to files which will be uploaded to the installs storage account | `list(string)` | `[]` | no |
 | <a name="input_flowlogs_cmk_key_name"></a> [flowlogs\_cmk\_key\_name](#input\_flowlogs\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Flow Logs Storage Account | `string` | `null` | no |
 | <a name="input_flowlogs_storageaccount_name"></a> [flowlogs\_storageaccount\_name](#input\_flowlogs\_storageaccount\_name) | (Optional) Custom name for the Flow Logs Storage Account | `string` | `"default"` | no |
-| <a name="input_fw_virtual_network_subnet_ids"></a> [fw\_virtual\_network\_subnet\_ids](#input\_fw\_virtual\_network\_subnet\_ids) | List of subnet ids for the firewall | `list(string)` | `[]` | no |
 | <a name="input_global_tags"></a> [global\_tags](#input\_global\_tags) | Global level tags | `map(string)` | n/a | yes |
 | <a name="input_image_gallery_description"></a> [image\_gallery\_description](#input\_image\_gallery\_description) | Description of the Shared Image Gallery to be created] | `string` | `"Images for FedRAMP Environment"` | no |
 | <a name="input_image_version_name"></a> [image\_version\_name](#input\_image\_version\_name) | The name of the image version to be created | `string` | `"1.0.0"` | no |
@@ -274,6 +273,7 @@ vm_image_definitions = {
 | <a name="input_regional_replica_count"></a> [regional\_replica\_count](#input\_regional\_replica\_count) | The number of replicas of the Shared Image Gallery to be created in the target region. Must be between 1 and 5. | `number` | `1` | no |
 | <a name="input_regional_tags"></a> [regional\_tags](#input\_regional\_tags) | Regional level tags | `map(string)` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Name prefix used for resources | `string` | n/a | yes |
+| <a name="input_sa_subnet_ids"></a> [sa\_subnet\_ids](#input\_sa\_subnet\_ids) | List of subnet ids for access to storage accounts to allow communication. | `list(string)` | `[]` | no |
 | <a name="input_sas_end_date"></a> [sas\_end\_date](#input\_sas\_end\_date) | value | `string` | n/a | yes |
 | <a name="input_sas_start_date"></a> [sas\_start\_date](#input\_sas\_start\_date) | value | `string` | n/a | yes |
 | <a name="input_storage_account_type"></a> [storage\_account\_type](#input\_storage\_account\_type) | The type of storage account to use for the Shared Image Gallery. Possible values are Standard\_LRS, Standard\_GRS, Standard\_RAGRS, Standard\_ZRS, Premium\_LRS, Premium\_ZRS | `string` | `"Standard_LRS"` | no |
@@ -330,6 +330,7 @@ Copyright © 2023 Coalfire Systems Inc.
 ## Tree
 ```
 .
+|-- CHANGELOG.md
 |-- CONTRIBUTING.md
 |-- LICENSE
 |-- License.md

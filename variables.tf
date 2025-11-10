@@ -57,9 +57,9 @@ variable "sas_end_date" {
   type        = string
 }
 
-variable "fw_virtual_network_subnet_ids" {
+variable "sa_subnet_ids" {
   type        = list(string)
-  description = "List of subnet ids for the firewall"
+  description = "List of subnet ids for access to storage accounts to allow communication."
   default     = []
 }
 

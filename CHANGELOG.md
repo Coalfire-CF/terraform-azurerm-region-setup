@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.0...v1.1.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* storage acct var update ([9fea514](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/9fea51406aedb72d69377818c50691c9f0ca2514))
+
+
+### Miscellaneous
+
+* update README tree ([6437c09](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/6437c091f08d2f159bf2e433e9b39bcd1e997af1))
+
 ## [1.1.0](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.0.8...v1.1.0) (2025-10-15)
 
 

@@ -57,9 +57,9 @@ variable "sas_end_date" {
   type        = string
 }
 
-variable "fw_virtual_network_subnet_ids" {
+variable "sa_subnet_ids" {
   type        = list(string)
-  description = "List of subnet ids for the firewall"
+  description = "List of subnet ids for access to storage accounts to allow communication."
   default     = []
 }
 
@@ -220,8 +220,15 @@ variable "architecture" {
   default = "x64"
 }
 
-variable "enable_sa_public_access" {
+variable "public_network_access_enabled" {
   type    = bool
+  description = "Enable/Disable public network access for the storage account."
+  default = true
+}
+
+variable "enable_customer_managed_key" {
+  type = bool
+  description = "Enable/Disable Customer Managed Key (CMK) for the storage account."
   default = true
 }
 
@@ -241,4 +248,35 @@ variable "storage_account_type" {
   type = string
   description = "The type of storage account to use for the Shared Image Gallery. Possible values are Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS"
   default = "Standard_LRS"
+}
+
+## Key Vault CMK Key Names (optional overrides) ##
+variable "ars_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the ARS Storage Account"
+  default     = null
+}
+
+variable "docs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Documents Storage Account"
+  default     = null
+}
+
+variable "flowlogs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Flow Logs Storage Account"
+  default     = null
+}
+
+variable "installs_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Installs Storage Account"
+  default     = null
+}
+
+variable "vmdiag_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the VM Diagnostic Logs Storage Account"
+  default     = null
 }

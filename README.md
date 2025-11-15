@@ -349,6 +349,5 @@ Copyright © 2023 Coalfire Systems Inc.
 |-- required_providers.tf
 |-- resource_group.tf
 |-- share_cloudshell.tf
-|-- update-readme-tree.sh
 |-- variables.tf
 ```

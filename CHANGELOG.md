@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.2](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.1...v1.1.2) (2025-11-19)
+
+
+### Miscellaneous
+
+* remove obsolete update-readme-tree.sh script ([e5e7aa9](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/e5e7aa9ab3a456c04a94398ae38028587a26a000))
+* remove obsolete update-readme-tree.sh script ([718bf5c](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/718bf5c6dd9a45eb4ca99d0e5f9c11654528fd7d))
+* remove old LICENSE file ([7900e03](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/7900e032bf2835831b49090aec89855304dc38cd))
+* remove old LICENSE file ([4a7dcbe](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/4a7dcbe0e271ebe26024ebcfef688519d2994ffb))
+* update README tree ([c72fb15](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/c72fb154a45af82e9bee5f8a9e5dd5c7e7f6cdbd))
+* update README tree ([b6632a3](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/b6632a38fec4bca9b74830f6a68b977e9fae7e0a))
+
 ## [1.1.1](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.0...v1.1.1) (2025-11-10)
 
 

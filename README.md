@@ -108,10 +108,13 @@ module "setup" {
 }
 
 ```
+
 ## Optional arguments
+
 This module accepts a number of additional arguments to modify resource deployments.
 
 ### Custom resource names
+
 You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
 
 ```hcl
@@ -131,6 +134,7 @@ module "setup" {
 ```
 
 ### File uploads
+
 Installation shellscripts and other files may be uploaded to blob storage by specifying their paths.
 
 The `file_upload_paths` argument accepts a list of any number of paths. The file at each path will be uploaded to the `uploads` container in the installs storage account. In the example below, two scripts are uploaded:
@@ -149,6 +153,7 @@ module "setup" {
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
 If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL: 
+
 ```hcl
 # Example Output
 file_upload_urls = {
@@ -158,7 +163,9 @@ file_upload_urls = {
 ```
 
 ### Azure Compute Gallery (Image Gallery) Image Definitions
+
 Any number of VM image definitions may be bootstapped in the Azure Compute Gallery by specifying `vm_image_definitions` as shown in the example below:
+
 ```hcl
   module "setup" {
   ...
@@ -184,6 +191,7 @@ Any number of VM image definitions may be bootstapped in the Azure Compute Galle
 ```
 
 If `vm_image_definitions` is defined, the module will output a key-value map of all VM image definitions, where the key is the image name and the value is the image ID: 
+
 ```hcl
 # Example Output
 vm_image_definitions = {
@@ -327,6 +335,7 @@ vm_image_definitions = {
 ### Copyright
 
 Copyright © 2023 Coalfire Systems Inc.
+
 ## Tree
 
 ```text

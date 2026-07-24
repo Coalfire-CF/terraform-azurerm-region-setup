@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.2...v1.1.3) (2026-07-24)
+
+
+### Miscellaneous
+
+* adopt Actions v0.12.1 (bypass auto-merge + event-driven re-merge) ([8f6fe89](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/8f6fe8989e5b5d2a028b363366969aa9ac738b8a))
+* **ci:** adopt Coalfire-CF/Actions v0.11.3 ([#159](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/159)) ([c3881d2](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/c3881d26d86c072244a5a9deab66a77d1fe78f1e))
+* **deps:** bump the org-actions group with 8 updates ([#161](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/161)) ([265d604](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/265d6043b29b70a79d89426909da8f65fae27ba7))
+* **deps:** bump the org-actions group with 8 updates ([#162](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/162)) ([4e1c6ec](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/4e1c6ec36c9cc2543d8333f682379491acd74a51))
+* **deps:** bump the org-actions group with 8 updates ([#163](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/163)) ([3f3a7e4](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/3f3a7e4c7d5e11d1d73920c3578fbd607521e073))
+* **deps:** bump the org-actions group with 8 updates ([#164](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/164)) ([705e64d](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/705e64d802ab3b60cb21c289be174890ce3e4e83))
+
 ## [1.1.2](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.1...v1.1.2) (2026-07-06)
 
 

@@ -1,5 +1,5 @@
 module "installs_sa" {
-  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v1.1.1"
+  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v2.0.0"
   name                       = local.installs_storageaccount_name
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location
@@ -22,13 +22,12 @@ module "installs_sa" {
 }
 
 resource "azurerm_storage_blob" "file_upload" {
-  depends_on             = [module.installs_sa]
-  count                  = length(var.file_upload_paths)
-  name                   = basename(var.file_upload_paths[count.index])
-  storage_account_name   = module.installs_sa.name
-  storage_container_name = "uploads"
-  type                   = "Block"
-  source                 = var.file_upload_paths[count.index]
+  depends_on           = [module.installs_sa]
+  count                = length(var.file_upload_paths)
+  name                 = basename(var.file_upload_paths[count.index])
+  storage_container_id = module.installs_sa.container_ids["uploads"]
+  type                 = "Block"
+  source               = var.file_upload_paths[count.index]
 }
 
 

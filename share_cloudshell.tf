@@ -35,10 +35,14 @@ resource "azurerm_role_assignment" "tstate_kv_crypto_user_cloudshell" {
   ]
 }
 
+data "azurerm_key_vault_key" "cloudshell_cmk" {
+  name         = "cloudshell-cmk"
+  key_vault_id = var.core_kv_id
+}
+
 resource "azurerm_storage_account_customer_managed_key" "enable_cloudShell_cmk" {
   storage_account_id = azurerm_storage_account.cloudShell.id
-  key_vault_id       = var.core_kv_id
-  key_name           = "cloudshell-cmk"
+  key_vault_key_id   = data.azurerm_key_vault_key.cloudshell_cmk.versionless_id
 
   depends_on = [
     azurerm_role_assignment.tstate_kv_crypto_user_cloudshell
@@ -46,7 +50,7 @@ resource "azurerm_storage_account_customer_managed_key" "enable_cloudShell_cmk" 
 }
 
 module "diag_cloudshell_sa" {
-  source                = "git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v1.1.5"
+  source                = "git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v2.0.0"
   diag_log_analytics_id = var.diag_log_analytics_id
   resource_id           = azurerm_storage_account.cloudShell.id
   resource_type         = "sa"

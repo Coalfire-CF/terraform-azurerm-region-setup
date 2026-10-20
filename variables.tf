@@ -203,33 +203,33 @@ variable "vm_image_definitions" {
 }
 
 variable "image_gallery_description" {
-  type = string
+  type        = string
   description = "Description of the Shared Image Gallery to be created]"
-  default = "Images for FedRAMP Environment"
+  default     = "Images for FedRAMP Environment"
 }
 
 variable "image_version_name" {
-  type = string
+  type        = string
   description = "The name of the image version to be created"
-  default = "1.0.0"
+  default     = "1.0.0"
 }
 
 variable "architecture" {
-  type = string
+  type        = string
   description = "CPU architecture supported by an OS. Possbile values x64 and Arm64"
-  default = "x64"
+  default     = "x64"
 }
 
 variable "public_network_access_enabled" {
-  type    = bool
+  type        = bool
   description = "Enable/Disable public network access for the storage account."
-  default = true
+  default     = true
 }
 
 variable "enable_customer_managed_key" {
-  type = bool
+  type        = bool
   description = "Enable/Disable Customer Managed Key (CMK) for the storage account."
-  default = true
+  default     = true
 }
 
 variable "network_watcher_enabled" {
@@ -239,15 +239,15 @@ variable "network_watcher_enabled" {
 }
 
 variable "regional_replica_count" {
-  type = number
+  type        = number
   description = "The number of replicas of the Shared Image Gallery to be created in the target region. Must be between 1 and 5."
-  default = 1
+  default     = 1
 }
 
 variable "storage_account_type" {
-  type = string
+  type        = string
   description = "The type of storage account to use for the Shared Image Gallery. Possible values are Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS"
-  default = "Standard_LRS"
+  default     = "Standard_LRS"
 }
 
 ## Key Vault CMK Key Names (optional overrides) ##

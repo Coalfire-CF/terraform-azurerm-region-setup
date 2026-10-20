@@ -1,5 +1,5 @@
 resource "azurerm_network_watcher" "fr_network_watcher" {
-  count               = var.network_watcher_enabled ? 1 : 0
+  count = var.network_watcher_enabled ? 1 : 0
 
   name                = local.network_watcher_name
   location            = var.location

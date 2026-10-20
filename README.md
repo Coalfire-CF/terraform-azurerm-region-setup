@@ -206,25 +206,25 @@ vm_image_definitions = {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.14.9 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.70 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.16 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.7 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 4.70 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 5.7 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.1.1 |
-| <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics | v1.1.5 |
-| <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.1.1 |
-| <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.1.1 |
-| <a name="module_installs_sa"></a> [installs\_sa](#module\_installs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.1.1 |
-| <a name="module_vm_diag"></a> [vm\_diag](#module\_vm\_diag) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v1.1.1 |
+| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
+| <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics | v2.0.0 |
+| <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
+| <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
+| <a name="module_installs_sa"></a> [installs\_sa](#module\_installs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
+| <a name="module_vm_diag"></a> [vm\_diag](#module\_vm\_diag) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
 
 ## Resources
 
@@ -243,6 +243,7 @@ vm_image_definitions = {
 | [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
 | [azurerm_storage_blob.file_upload](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
+| [azurerm_key_vault_key.cloudshell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_key) | data source |
 | [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
 
 ## Inputs

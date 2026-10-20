@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v2.0.0...v2.0.1) (2026-10-20)
+
+
+### Miscellaneous
+
+* **deps:** bump the org-actions group across 1 directory with 7 updates ([#184](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/184)) ([dca3b1f](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/dca3b1f5dd6275a6934bdeb4ceae0d8858e78748))
+
 ## [2.0.0](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.3...v2.0.0) (2026-10-20)
 
 

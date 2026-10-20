@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.3...v2.0.0) (2026-10-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Terraform 1.16 and azurerm 5.7 ([#185](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/185))
+
+### Features
+
+* require Terraform 1.16 and azurerm 5.7 ([#185](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/185)) ([567b094](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/567b094b00014cb7fa44765278df658ca3d6cc69))
+
 ## [1.1.3](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v1.1.2...v1.1.3) (2026-10-20)
 
 

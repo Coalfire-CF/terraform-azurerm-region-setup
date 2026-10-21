@@ -7,7 +7,7 @@ resource "azurerm_shared_image_gallery" "marketplaceimages" {
   tags = merge({
     Function = "Images"
     Plane    = "Management"
-  }, var.global_tags, var.regional_tags)
+  }, local.tags)
 }
 
 resource "azurerm_shared_image" "images" {
@@ -20,6 +20,11 @@ resource "azurerm_shared_image" "images" {
   os_type             = each.value.os_type
   hyper_v_generation  = each.value.hyper_v_generation
   architecture        = var.architecture
+
+  tags = merge({
+    Function = "Images"
+    Plane    = "Management"
+  }, local.tags)
 
   identifier {
     publisher = each.value.identifier_publisher
@@ -62,5 +67,5 @@ resource "azurerm_shared_image_version" "versions" {
   tags = merge({
     Function = "Images"
     Plane    = "Management"
-  }, var.global_tags, var.regional_tags)
+  }, local.tags)
 }

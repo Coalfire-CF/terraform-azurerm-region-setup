@@ -8,6 +8,6 @@ resource "azurerm_network_watcher" "fr_network_watcher" {
   tags = merge({
     Function = "SIEM"
     Plane    = "Management"
-  }, var.global_tags, var.regional_tags)
+  }, local.tags)
 }
 

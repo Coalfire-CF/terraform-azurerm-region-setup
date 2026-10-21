@@ -1,5 +1,6 @@
 locals {
   storage_name_prefix = replace(var.resource_prefix, "-", "")
+  tags                = merge(var.global_tags, var.regional_tags, var.tags)
 
   # Default names for resources
   compute_gallery_name           = var.compute_gallery_name != "default" ? var.compute_gallery_name : "${replace(var.resource_prefix, "-", "_")}_imagegallery_1"

@@ -12,103 +12,93 @@ Learn more at [Coalfire OpenSource](https://coalfire.com/opensource).
 
 ### Dependencies
 
-- This module is dependent on the [Coalfire-CF/terraform-azurerm-security-core](https://github.com/Coalfire-CF/terraform-azurerm-security-core) module being deployed.
+- A Log Analytics workspace for storage diagnostics (`diag_log_analytics_id`).
+- A Key Vault (`core_kv_id`) only when `enable_customer_managed_key = true`. The [Coalfire-CF/terraform-azurerm-security-core](https://github.com/Coalfire-CF/terraform-azurerm-security-core) module provides one.
 
 ### Resource List
 
-- Resource Groups
-- Azure Monitor
-- Network Watcher
-- Azure Image Gallery
-- Storage Account Blob and Container for terraform remote state lock
-- Storage Account Blobs for
-  - backup
-  - flowlogs
-  - monitor logs
-  - installer files
-  - CloudShell
-  - Terraform remote state
+- Resource groups: network, application, management, key vault, plus any in `additional_resource_groups`
+- Network Watcher (optional, `network_watcher_enabled`)
+- Azure Compute Gallery, with optional image definitions and versions
+- Storage accounts, each through [terraform-azurerm-storage-account](https://github.com/Coalfire-CF/terraform-azurerm-storage-account) v3.0.0 with diagnostics to Log Analytics:
+  - Azure Recovery Services (ARS)
+  - documents
+  - flow logs
+  - installers, with optional file uploads
+  - VM diagnostics
+  - Cloud Shell
 
-## Code Updates
-
-`tstate.tf` Update to the appropriate version and storage accounts, see sample below:
-
-``` hcl
-terraform {
-  required_version = ">= 1.1.7"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.45.0"
-    }
-  }
-  backend "azurerm" {
-    resource_group_name  = "prod-mp-core-rg"
-    storage_account_name = "prodmpsatfstate"
-    container_name       = "tfstatecontainer"
-    environment          = "usgovernment"
-    key                  = "setup.tfstate"
-  }
-}
-```
-
-Update the `remote-data.tf` file to add the setup security state key. Example remote data block:
-
-``` hcl
-data "terraform_remote_state" "usgv-region-setup" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = "prod-mp-core-rg"
-    storage_account_name = "prodmpsatfstate"
-    container_name       = "tfstatecontainer"
-    environment          = "usgovernment"
-    key                  = "setup.tfstate"
-  }
-}
-```
-
-## Deployment Steps
-
-This module can be called as outlined below.
-
-- Change directory to the `/coalfire-azure-pak/terraform/prod/us-va/region-setup` folder.
-- Run `terraform init` to download modules and create initial local state file.
-- Run `terraform plan` to ensure no errors and validate plan is deploying expected resources.
-- If everything looks correct in the plan output, run `terraform apply`.
+The module has no backend and reads no remote state. The caller owns both.
 
 ## Usage
-
-Include example for how to call the module below with generic variables
 
 ```hcl
 provider "azurerm" {
   features {}
+  environment                     = "usgovernment"
+  resource_provider_registrations = "none"
+  resource_providers_to_register  = ["Microsoft.Compute", "Microsoft.Insights", "Microsoft.Network", "Microsoft.Storage"]
+  storage_use_azuread             = true
 }
 
 module "setup" {
-  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
+  source = "git::https://github.com/Coalfire-CF/terraform-azurerm-region-setup?ref=v3.0.0"
 
   location_abbreviation = var.location_abbreviation
   location              = var.location
-  resource_prefix       = local.resource_prefix
+  resource_prefix       = var.resource_prefix
   app_abbreviation      = var.app_abbreviation
   regional_tags         = var.regional_tags
-  global_tags           = merge(var.global_tags, local.global_local_tags)
-  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
-  app_rg_name           = "${local.resource_prefix}-application-rg"
-  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
-  networking_rg_name    = "${local.resource_prefix}-networking-rg"
-  sas_start_date        = "2023-10-06" #Change to today's date
-  sas_end_date          = "2023-11-06" #Change to one month from now
-  ip_for_remote_access  = var.ip_for_remote_access
-  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
-  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
+  global_tags           = var.global_tags
+  tags                  = var.tags
+  mgmt_rg_name          = "${var.resource_prefix}-management-rg"
+  app_rg_name           = "${var.resource_prefix}-application-rg"
+  key_vault_rg_name     = "${var.resource_prefix}-keyvault-rg"
+  networking_rg_name    = "${var.resource_prefix}-networking-rg"
+  diag_log_analytics_id = var.diag_log_analytics_id
+
+  private_endpoint_subnet_id = var.private_endpoint_subnet_id
+  blob_private_dns_zone_id   = var.blob_private_dns_zone_id
+  file_private_dns_zone_id   = var.file_private_dns_zone_id
+
   additional_resource_groups = [
-    "${local.resource_prefix}-identity-rg"
+    "${var.resource_prefix}-identity-rg"
   ]
 }
-
 ```
+
+A complete root is in [`examples/default`](examples/default).
+
+## Security defaults
+
+All six storage accounts get these defaults from the storage-account module. The input that loosens each one is named.
+
+| Default | Loosened by |
+| --- | --- |
+| Public network access `Disabled` | `public_network_access = "Enabled"` |
+| Firewall default action `Deny`, trusted Azure services bypass | `ip_for_remote_access`, `sa_subnet_ids` (apply only when public access is Enabled) |
+| Shared Key authorization off | `cloudshell_shared_access_key_enabled` (Cloud Shell account only) |
+| Minimum TLS 1.2, HTTPS only | not configurable |
+| Platform-managed keys plus infrastructure encryption | `enable_customer_managed_key` switches to customer-managed keys |
+| Soft delete for blobs, containers and shares (7 days), point-in-time restore (6 days) | `blob_delete_retention_days`, `container_delete_retention_days`, `share_delete_retention_days` |
+| GRS replication | `storage_replication_type` |
+
+## Private endpoints
+
+Set `private_endpoint_subnet_id` to create a private endpoint on each storage account:
+
+- `blob_private_dns_zone_id`: the `privatelink.blob` zone for the ARS, docs, flow logs, installs and VM diagnostics accounts.
+- `file_private_dns_zone_id`: the `privatelink.file` zone for the Cloud Shell account. Its endpoint targets the `file` subresource.
+
+With `private_endpoint_subnet_id = null` the module creates no endpoints. With public access Disabled, only trusted Azure services can then reach the accounts.
+
+## Customer-managed keys
+
+Off by default. Setting `enable_customer_managed_key = true` needs `core_kv_id`. For each account, either set its `*_cmk_key_name` to an existing key, or leave it null and give the deploying identity key create rights on the vault so the storage module can create one. To reuse a security-core key named `cloudshell-cmk`, set `cloudshell_cmk_key_name = "cloudshell-cmk"`.
+
+## Cloud Shell
+
+Cloud Shell is expected to mount its file share with the storage account key. Shared Key authorization is off by default, so Cloud Shell likely cannot use this account until you set `cloudshell_shared_access_key_enabled = true`. That lets anyone holding an account key bypass Entra ID and RBAC on this account. Leave it off if you do not use Cloud Shell with this account.
 
 ## Optional arguments
 
@@ -151,15 +141,21 @@ module "setup" {
 }
 ```
 
+Uploads use the blob data plane, and Shared Key is off. They need:
+
+- `storage_use_azuread = true` in the caller's azurerm provider block.
+- An Entra role such as `Storage Blob Data Contributor` on the installs account for the identity running Terraform.
+- Network reach from the runner to the blob endpoint. With public access Disabled, that means a private endpoint the runner can resolve and reach.
+
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
-If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL:
+If `file_upload_paths` is defined, `file_uploads` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL:
 
 ```hcl
 # Example Output
-file_upload_urls = {
-  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
-  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+file_uploads = {
+  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/uploads/linux_join_ad.sh"
+  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/uploads/linux_monitor_agent.sh"
 }
 ```
 
@@ -201,30 +197,42 @@ vm_image_definitions = {
 }
 ```
 
+## Breaking changes in 3.0.0
+
+- Requires Terraform `>= 1.16.6` and azurerm `~> 5.10`.
+- Storage accounts use terraform-azurerm-storage-account v3.0.0. Public network access defaults to `Disabled` and Shared Key is off on all six accounts.
+- `public_network_access_enabled` (bool) is replaced by `public_network_access` (`Disabled` or `Enabled`).
+- `sas_start_date`, `sas_end_date` and the `storage_account_vm_diag_sas` output are removed. Use managed identity and RBAC on `vmdiag_endpoint`.
+- `enable_customer_managed_key` defaults to `false`. `core_kv_id` is optional and required only with CMK.
+- `ip_for_remote_access` is now `list(string)` with default `[]`.
+- The Cloud Shell account is created by the storage module (`module.cloudshell_sa`). It is GRS, has soft delete and point-in-time restore, and no longer reads a `cloudshell-cmk` key or assigns a role on `core_kv_id`.
+- New inputs: `tags`, `storage_replication_type`, `private_endpoint_subnet_id`, `blob_private_dns_zone_id`, `file_private_dns_zone_id`, `cloudshell_shared_access_key_enabled`, `cloudshell_cmk_key_name`, `blob_delete_retention_days`, `container_delete_retention_days`, `share_delete_retention_days`.
+- Resource groups and gallery image definitions now carry tags.
+
 <!-- markdownlint-disable MD033 MD034 MD060 -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.16 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.7 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.16.6, < 2.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.10 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 5.7 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 5.10 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
-| <a name="module_diag_cloudshell_sa"></a> [diag\_cloudshell\_sa](#module\_diag\_cloudshell\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics | v2.0.0 |
-| <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
-| <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
-| <a name="module_installs_sa"></a> [installs\_sa](#module\_installs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
-| <a name="module_vm_diag"></a> [vm\_diag](#module\_vm\_diag) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v2.0.0 |
+| <a name="module_ars_sa"></a> [ars\_sa](#module\_ars\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
+| <a name="module_cloudshell_sa"></a> [cloudshell\_sa](#module\_cloudshell\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
+| <a name="module_docs_sa"></a> [docs\_sa](#module\_docs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
+| <a name="module_flowlogs_sa"></a> [flowlogs\_sa](#module\_flowlogs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
+| <a name="module_installs_sa"></a> [installs\_sa](#module\_installs\_sa) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
+| <a name="module_vm_diag"></a> [vm\_diag](#module\_vm\_diag) | git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account | v3.0.0 |
 
 ## Resources
 
@@ -236,15 +244,10 @@ vm_image_definitions = {
 | [azurerm_resource_group.key_vault](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_resource_group.management](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_resource_group.network](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
-| [azurerm_role_assignment.tstate_kv_crypto_user_cloudshell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_shared_image.images](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image) | resource |
 | [azurerm_shared_image_gallery.marketplaceimages](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_gallery) | resource |
 | [azurerm_shared_image_version.versions](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/shared_image_version) | resource |
-| [azurerm_storage_account.cloudShell](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
-| [azurerm_storage_account_customer_managed_key.enable_cloudShell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_customer_managed_key) | resource |
 | [azurerm_storage_blob.file_upload](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
-| [azurerm_key_vault_key.cloudshell_cmk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_key) | data source |
-| [azurerm_storage_account_sas.vm_diag_sas](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account_sas) | data source |
 
 ## Inputs
 
@@ -256,22 +259,28 @@ vm_image_definitions = {
 | <a name="input_architecture"></a> [architecture](#input\_architecture) | CPU architecture supported by an OS. Possbile values x64 and Arm64 | `string` | `"x64"` | no |
 | <a name="input_ars_cmk_key_name"></a> [ars\_cmk\_key\_name](#input\_ars\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the ARS Storage Account | `string` | `null` | no |
 | <a name="input_ars_storageaccount_name"></a> [ars\_storageaccount\_name](#input\_ars\_storageaccount\_name) | (Optional) Custom name for the ars Storage Account | `string` | `"default"` | no |
+| <a name="input_blob_delete_retention_days"></a> [blob\_delete\_retention\_days](#input\_blob\_delete\_retention\_days) | Days deleted blobs are kept on all six storage accounts. Point-in-time restore keeps 6 days, so this must be at least 7. Lower values shorten the recovery window. | `number` | `7` | no |
+| <a name="input_blob_private_dns_zone_id"></a> [blob\_private\_dns\_zone\_id](#input\_blob\_private\_dns\_zone\_id) | ID of the privatelink.blob private DNS zone linked to the blob private endpoints of the ars, docs, flowlogs, installs and vm\_diag accounts. Null skips the DNS zone group. | `string` | `null` | no |
+| <a name="input_cloudshell_cmk_key_name"></a> [cloudshell\_cmk\_key\_name](#input\_cloudshell\_cmk\_key\_name) | (Optional) Name of an existing Key Vault key in core\_kv\_id for the Cloud Shell account's customer-managed key. Null creates one when enable\_customer\_managed\_key is true. | `string` | `null` | no |
+| <a name="input_cloudshell_shared_access_key_enabled"></a> [cloudshell\_shared\_access\_key\_enabled](#input\_cloudshell\_shared\_access\_key\_enabled) | Allow Shared Key authorization on the Cloud Shell storage account. Cloud Shell is expected to mount its file share with the account key, so Cloud Shell likely cannot use this account while false. True lets anyone holding a key bypass Entra ID and RBAC on this account. | `bool` | `false` | no |
 | <a name="input_cloudshell_storageaccount_name"></a> [cloudshell\_storageaccount\_name](#input\_cloudshell\_storageaccount\_name) | (Optional) Custom name for the Cloudshell Storage Account | `string` | `"default"` | no |
 | <a name="input_compute_gallery_name"></a> [compute\_gallery\_name](#input\_compute\_gallery\_name) | (Optional) Custom name for the Azure Compute Gallery (Shared Image Gallery) | `string` | `"default"` | no |
-| <a name="input_core_kv_id"></a> [core\_kv\_id](#input\_core\_kv\_id) | n/a | `string` | n/a | yes |
+| <a name="input_container_delete_retention_days"></a> [container\_delete\_retention\_days](#input\_container\_delete\_retention\_days) | Days deleted containers are kept on all six storage accounts. Lower values shorten the recovery window. | `number` | `7` | no |
+| <a name="input_core_kv_id"></a> [core\_kv\_id](#input\_core\_kv\_id) | Resource ID of the Key Vault that holds or receives the customer-managed keys. Required when enable\_customer\_managed\_key is true; unused otherwise. | `string` | `null` | no |
 | <a name="input_diag_log_analytics_id"></a> [diag\_log\_analytics\_id](#input\_diag\_log\_analytics\_id) | ID of the Log Analytics Workspace diagnostic logs should be sent to | `string` | n/a | yes |
 | <a name="input_docs_cmk_key_name"></a> [docs\_cmk\_key\_name](#input\_docs\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Documents Storage Account | `string` | `null` | no |
 | <a name="input_docs_storageaccount_name"></a> [docs\_storageaccount\_name](#input\_docs\_storageaccount\_name) | (Optional) Custom name for the Documents Storage Account | `string` | `"default"` | no |
-| <a name="input_enable_customer_managed_key"></a> [enable\_customer\_managed\_key](#input\_enable\_customer\_managed\_key) | Enable/Disable Customer Managed Key (CMK) for the storage account. | `bool` | `true` | no |
-| <a name="input_file_upload_paths"></a> [file\_upload\_paths](#input\_file\_upload\_paths) | A list of paths to files which will be uploaded to the installs storage account | `list(string)` | `[]` | no |
+| <a name="input_enable_customer_managed_key"></a> [enable\_customer\_managed\_key](#input\_enable\_customer\_managed\_key) | Encrypt all six storage accounts with customer-managed keys in core\_kv\_id. When false, platform-managed keys plus infrastructure encryption apply. When true and a *\_cmk\_key\_name is null, the storage module creates a key named <account>-cmk, so the deploying identity needs key create rights on the vault. | `bool` | `false` | no |
+| <a name="input_file_private_dns_zone_id"></a> [file\_private\_dns\_zone\_id](#input\_file\_private\_dns\_zone\_id) | ID of the privatelink.file private DNS zone linked to the Cloud Shell account's file private endpoint. Null skips the DNS zone group. | `string` | `null` | no |
+| <a name="input_file_upload_paths"></a> [file\_upload\_paths](#input\_file\_upload\_paths) | Paths of files to upload to the uploads container in the installs storage account. Uploads use the blob data plane: shared keys are off, so the caller's azurerm provider needs storage\_use\_azuread = true and an Entra role such as Storage Blob Data Contributor on the account, and the runner needs network access to the blob endpoint (a private endpoint when public\_network\_access is Disabled). | `list(string)` | `[]` | no |
 | <a name="input_flowlogs_cmk_key_name"></a> [flowlogs\_cmk\_key\_name](#input\_flowlogs\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Flow Logs Storage Account | `string` | `null` | no |
 | <a name="input_flowlogs_storageaccount_name"></a> [flowlogs\_storageaccount\_name](#input\_flowlogs\_storageaccount\_name) | (Optional) Custom name for the Flow Logs Storage Account | `string` | `"default"` | no |
 | <a name="input_global_tags"></a> [global\_tags](#input\_global\_tags) | Global level tags | `map(string)` | n/a | yes |
-| <a name="input_image_gallery_description"></a> [image\_gallery\_description](#input\_image\_gallery\_description) | Description of the Shared Image Gallery to be created] | `string` | `"Images for FedRAMP Environment"` | no |
+| <a name="input_image_gallery_description"></a> [image\_gallery\_description](#input\_image\_gallery\_description) | Description of the Shared Image Gallery to be created | `string` | `"Images for FedRAMP Environment"` | no |
 | <a name="input_image_version_name"></a> [image\_version\_name](#input\_image\_version\_name) | The name of the image version to be created | `string` | `"1.0.0"` | no |
 | <a name="input_installs_cmk_key_name"></a> [installs\_cmk\_key\_name](#input\_installs\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the Installs Storage Account | `string` | `null` | no |
 | <a name="input_installs_storageaccount_name"></a> [installs\_storageaccount\_name](#input\_installs\_storageaccount\_name) | (Optional) Custom name for the Installs Storage Account | `string` | `"default"` | no |
-| <a name="input_ip_for_remote_access"></a> [ip\_for\_remote\_access](#input\_ip\_for\_remote\_access) | This is the same as 'cidrs\_for\_remote\_access' but without the /32 on each of the files. The 'ip\_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over | `list(any)` | n/a | yes |
+| <a name="input_ip_for_remote_access"></a> [ip\_for\_remote\_access](#input\_ip\_for\_remote\_access) | Public IPv4 addresses or CIDR ranges allowed through the firewall of every storage account. Applies only when public\_network\_access is Enabled. Each entry opens the account's public endpoint to that address. | `list(string)` | `[]` | no |
 | <a name="input_key_vault_rg_name"></a> [key\_vault\_rg\_name](#input\_key\_vault\_rg\_name) | Key Vault resource group name | `string` | `"keyvault-rg-01"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location/region to create resources in | `string` | n/a | yes |
 | <a name="input_location_abbreviation"></a> [location\_abbreviation](#input\_location\_abbreviation) | The  Azure location/region in 4 letter code | `string` | n/a | yes |
@@ -279,15 +288,17 @@ vm_image_definitions = {
 | <a name="input_network_watcher_enabled"></a> [network\_watcher\_enabled](#input\_network\_watcher\_enabled) | Enable Network Watcher in the region | `bool` | `true` | no |
 | <a name="input_network_watcher_name"></a> [network\_watcher\_name](#input\_network\_watcher\_name) | (Optional) Custom name for the Azure Network Watcher | `string` | `"default"` | no |
 | <a name="input_networking_rg_name"></a> [networking\_rg\_name](#input\_networking\_rg\_name) | Networking resource group name | `string` | `"networking-rg-01"` | no |
-| <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Enable/Disable public network access for the storage account. | `bool` | `true` | no |
+| <a name="input_private_endpoint_subnet_id"></a> [private\_endpoint\_subnet\_id](#input\_private\_endpoint\_subnet\_id) | Subnet ID for a private endpoint on each of the six storage accounts. Null creates no private endpoints; with public\_network\_access Disabled the accounts are then reachable only by trusted Azure services. | `string` | `null` | no |
+| <a name="input_public_network_access"></a> [public\_network\_access](#input\_public\_network\_access) | Public network access for all six storage accounts: Disabled or Enabled. Enabled exposes the account endpoints to the internet, limited only by ip\_for\_remote\_access and sa\_subnet\_ids. Keep Disabled and use private\_endpoint\_subnet\_id. | `string` | `"Disabled"` | no |
 | <a name="input_regional_replica_count"></a> [regional\_replica\_count](#input\_regional\_replica\_count) | The number of replicas of the Shared Image Gallery to be created in the target region. Must be between 1 and 5. | `number` | `1` | no |
 | <a name="input_regional_tags"></a> [regional\_tags](#input\_regional\_tags) | Regional level tags | `map(string)` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Name prefix used for resources | `string` | n/a | yes |
-| <a name="input_sa_subnet_ids"></a> [sa\_subnet\_ids](#input\_sa\_subnet\_ids) | List of subnet ids for access to storage accounts to allow communication. | `list(string)` | `[]` | no |
-| <a name="input_sas_end_date"></a> [sas\_end\_date](#input\_sas\_end\_date) | value | `string` | n/a | yes |
-| <a name="input_sas_start_date"></a> [sas\_start\_date](#input\_sas\_start\_date) | value | `string` | n/a | yes |
-| <a name="input_storage_account_type"></a> [storage\_account\_type](#input\_storage\_account\_type) | The type of storage account to use for the Shared Image Gallery. Possible values are Standard\_LRS, Standard\_GRS, Standard\_RAGRS, Standard\_ZRS, Premium\_LRS, Premium\_ZRS | `string` | `"Standard_LRS"` | no |
-| <a name="input_vm_image_definitions"></a> [vm\_image\_definitions](#input\_vm\_image\_definitions) | n/a | <pre>list(object({<br/>    name                 = string<br/>    os_type              = string<br/>    identifier_publisher = string<br/>    identifier_offer     = string<br/>    identifier_sku       = string<br/>    hyper_v_generation   = string<br/>    managed_image_id     = optional(string, null) # Optional: source for image version<br/><br/>    # Make purchase_plan attributes optional<br/>    purchase_plan_name      = optional(string)<br/>    purchase_plan_publisher = optional(string)<br/>    purchase_plan_product   = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_sa_subnet_ids"></a> [sa\_subnet\_ids](#input\_sa\_subnet\_ids) | Subnet IDs allowed through the firewall of every storage account (service endpoints). Applies only when public\_network\_access is Enabled. | `list(string)` | `[]` | no |
+| <a name="input_share_delete_retention_days"></a> [share\_delete\_retention\_days](#input\_share\_delete\_retention\_days) | Days deleted file shares are kept on all six storage accounts, including the Cloud Shell share. Lower values shorten the recovery window. | `number` | `7` | no |
+| <a name="input_storage_account_type"></a> [storage\_account\_type](#input\_storage\_account\_type) | Replica storage type for gallery image versions: Standard\_LRS, Standard\_ZRS or Premium\_LRS. Default Standard\_LRS: replicas can be rebuilt from the source managed image. Use Standard\_ZRS where the region has availability zones and replica loss would block deployments. | `string` | `"Standard_LRS"` | no |
+| <a name="input_storage_replication_type"></a> [storage\_replication\_type](#input\_storage\_replication\_type) | Replication for all six storage accounts: LRS, GRS, RAGRS, ZRS, GZRS or RAGZRS. Default GRS matches the storage-account module and keeps a copy in the paired region. Use ZRS or GZRS where the region has availability zones. LRS keeps one copy in one datacenter. | `string` | `"GRS"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags merged onto every taggable resource, after global\_tags and regional\_tags. | `map(string)` | `{}` | no |
+| <a name="input_vm_image_definitions"></a> [vm\_image\_definitions](#input\_vm\_image\_definitions) | Image definitions to create in the compute gallery. An entry with managed\_image\_id also gets an image version. | <pre>list(object({<br/>    name                 = string<br/>    os_type              = string<br/>    identifier_publisher = string<br/>    identifier_offer     = string<br/>    identifier_sku       = string<br/>    hyper_v_generation   = string<br/>    managed_image_id     = optional(string, null) # Optional: source for image version<br/><br/>    # Make purchase_plan attributes optional<br/>    purchase_plan_name      = optional(string)<br/>    purchase_plan_publisher = optional(string)<br/>    purchase_plan_product   = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_vmdiag_cmk_key_name"></a> [vmdiag\_cmk\_key\_name](#input\_vmdiag\_cmk\_key\_name) | (Optional) Name of the Key Vault Key to use for Customer Managed Keys in the VM Diagnostic Logs Storage Account | `string` | `null` | no |
 | <a name="input_vmdiag_storageaccount_name"></a> [vmdiag\_storageaccount\_name](#input\_vmdiag\_storageaccount\_name) | (Optional) Custom name for the VM Diagnostic Logs Storage Account | `string` | `"default"` | no |
 
@@ -314,7 +325,6 @@ vm_image_definitions = {
 | <a name="output_storage_account_flowlogs_name"></a> [storage\_account\_flowlogs\_name](#output\_storage\_account\_flowlogs\_name) | n/a |
 | <a name="output_storage_account_install_id"></a> [storage\_account\_install\_id](#output\_storage\_account\_install\_id) | n/a |
 | <a name="output_storage_account_install_name"></a> [storage\_account\_install\_name](#output\_storage\_account\_install\_name) | n/a |
-| <a name="output_storage_account_vm_diag_sas"></a> [storage\_account\_vm\_diag\_sas](#output\_storage\_account\_vm\_diag\_sas) | n/a |
 | <a name="output_storage_account_vmdiag_id"></a> [storage\_account\_vmdiag\_id](#output\_storage\_account\_vmdiag\_id) | n/a |
 | <a name="output_storage_account_vmdiag_name"></a> [storage\_account\_vmdiag\_name](#output\_storage\_account\_vmdiag\_name) | n/a |
 | <a name="output_vm_image_definitions"></a> [vm\_image\_definitions](#output\_vm\_image\_definitions) | n/a |

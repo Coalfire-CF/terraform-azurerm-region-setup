@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v2.0.1...v3.0.0) (2026-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* storage public access defaults to Disabled and Shared Key is off. public_network_access replaces public_network_access_enabled. The vm_diag SAS, its inputs and output are removed. CMK defaults off and core_kv_id is optional. Cloud Shell moves to module.cloudshell_sa.
+
+### Features
+
+* require Terraform 1.16.6 and azurerm 5.10 ([#188](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/188)) ([4f16848](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/4f16848e6903e4655207e5e509820db618edf9a5))
+
 ## [2.0.1](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v2.0.0...v2.0.1) (2026-10-20)
 
 

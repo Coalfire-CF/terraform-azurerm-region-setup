@@ -1,5 +1,5 @@
 module "vm_diag" {
-  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v2.0.0"
+  source                     = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v3.0.0"
   name                       = local.vmdiag_storageaccount_name
   resource_group_name        = azurerm_resource_group.management.name
   location                   = var.location
@@ -10,44 +10,18 @@ module "vm_diag" {
   tags = merge({
     Function = "Storage"
     Plane    = "Management"
-  }, var.global_tags, var.regional_tags)
+  }, local.tags)
 
-  public_network_access_enabled = var.public_network_access_enabled
-  enable_customer_managed_key   = var.enable_customer_managed_key
-  cmk_key_vault_id              = var.core_kv_id
-  cmk_key_name                  = var.vmdiag_cmk_key_name
-}
+  public_network_access           = var.public_network_access
+  replication_type                = var.storage_replication_type
+  shared_access_key_enabled       = false
+  endpoint_subnet_id              = var.private_endpoint_subnet_id
+  private_dns_zone_id             = var.blob_private_dns_zone_id
+  blob_delete_retention_days      = var.blob_delete_retention_days
+  container_delete_retention_days = var.container_delete_retention_days
+  share_delete_retention_days     = var.share_delete_retention_days
 
-data "azurerm_storage_account_sas" "vm_diag_sas" {
-  connection_string = module.vm_diag.primary_connection_string
-  https_only        = true
-
-  resource_types {
-    service   = true
-    container = true
-    object    = true
-  }
-
-  services {
-    blob  = true
-    queue = false
-    table = true
-    file  = false
-  }
-
-  start  = var.sas_start_date
-  expiry = var.sas_end_date
-
-  permissions {
-    read    = true
-    write   = true
-    delete  = false
-    list    = false
-    add     = true
-    create  = true
-    update  = true
-    process = true
-    tag     = false
-    filter  = false
-  }
+  enable_customer_managed_key = var.enable_customer_managed_key
+  cmk_key_vault_id            = var.core_kv_id
+  cmk_key_name                = var.vmdiag_cmk_key_name
 }

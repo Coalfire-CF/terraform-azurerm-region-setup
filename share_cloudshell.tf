@@ -1,57 +1,33 @@
-resource "azurerm_storage_account" "cloudShell" {
-  name                            = local.cloudshell_storageaccount_name
-  resource_group_name             = azurerm_resource_group.management.name
-  location                        = var.location
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  account_kind                    = "StorageV2"
-  https_traffic_only_enabled      = true
-  allow_nested_items_to_be_public = false
+# Storage for Azure Cloud Shell. Cloud Shell mounts an Azure Files share, so the
+# private endpoint targets the file subresource.
+module "cloudshell_sa" {
+  source                = "git::https://github.com/Coalfire-CF/terraform-azurerm-storage-account?ref=v3.0.0"
+  name                  = local.cloudshell_storageaccount_name
+  resource_group_name   = azurerm_resource_group.management.name
+  location              = var.location
+  account_kind          = "StorageV2"
+  replication_type      = var.storage_replication_type
+  diag_log_analytics_id = var.diag_log_analytics_id
 
-  lifecycle {
-    prevent_destroy = false
-    ignore_changes = [
-      customer_managed_key # required by https://github.com/hashicorp/terraform-provider-azurerm/issues/16085
-    ]
-  }
+  public_network_access      = var.public_network_access
+  ip_rules                   = var.ip_for_remote_access
+  virtual_network_subnet_ids = var.sa_subnet_ids
+  shared_access_key_enabled  = var.cloudshell_shared_access_key_enabled
 
-  identity {
-    type = "SystemAssigned"
-  }
+  endpoint_subnet_id                 = var.private_endpoint_subnet_id
+  private_endpoint_subresource_names = ["file"]
+  private_dns_zone_id                = var.file_private_dns_zone_id
+
+  enable_customer_managed_key = var.enable_customer_managed_key
+  cmk_key_vault_id            = var.core_kv_id
+  cmk_key_name                = var.cloudshell_cmk_key_name
+
+  blob_delete_retention_days      = var.blob_delete_retention_days
+  container_delete_retention_days = var.container_delete_retention_days
+  share_delete_retention_days     = var.share_delete_retention_days
 
   tags = merge({
     Function = "Storage"
     Plane    = "Management"
-  }, var.global_tags, var.regional_tags)
-}
-
-resource "azurerm_role_assignment" "tstate_kv_crypto_user_cloudshell" {
-  scope                = var.core_kv_id
-  role_definition_name = "Key Vault Crypto Service Encryption User"
-  principal_id         = azurerm_storage_account.cloudShell.identity[0].principal_id
-
-  depends_on = [
-    azurerm_storage_account.cloudShell
-  ]
-}
-
-data "azurerm_key_vault_key" "cloudshell_cmk" {
-  name         = "cloudshell-cmk"
-  key_vault_id = var.core_kv_id
-}
-
-resource "azurerm_storage_account_customer_managed_key" "enable_cloudShell_cmk" {
-  storage_account_id = azurerm_storage_account.cloudShell.id
-  key_vault_key_id   = data.azurerm_key_vault_key.cloudshell_cmk.versionless_id
-
-  depends_on = [
-    azurerm_role_assignment.tstate_kv_crypto_user_cloudshell
-  ]
-}
-
-module "diag_cloudshell_sa" {
-  source                = "git::https://github.com/Coalfire-CF/terraform-azurerm-diagnostics?ref=v2.0.0"
-  diag_log_analytics_id = var.diag_log_analytics_id
-  resource_id           = azurerm_storage_account.cloudShell.id
-  resource_type         = "sa"
+  }, local.tags)
 }

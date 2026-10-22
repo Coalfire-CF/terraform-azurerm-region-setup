@@ -30,11 +30,6 @@ output "storage_account_vmdiag_name" {
   value = module.vm_diag.name
 }
 
-output "storage_account_vm_diag_sas" {
-  sensitive = true
-  value     = data.azurerm_storage_account_sas.vm_diag_sas.sas
-}
-
 output "vmdiag_endpoint" {
   value = module.vm_diag.primary_blob_endpoint
 }

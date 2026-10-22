@@ -4,110 +4,99 @@
 
 ## Description
 
-This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework. 
+This module creates basic Azure resources that are foundational to environment set up in a specific Azure region. It is the second step in deploying the [Coalfire-Azure-RAMPpak](https://github.com/Coalfire-CF/Coalfire-Azure-RAMPpak) FedRAMP Framework.
 
 Learn more at [Coalfire OpenSource](https://coalfire.com/opensource).
 
 ### Dependencies
 
-- This module is dependent on the [Coalfire-CF/terraform-azurerm-security-core](https://github.com/Coalfire-CF/terraform-azurerm-security-core) module being deployed. 
+- A Log Analytics workspace for storage diagnostics (`diag_log_analytics_id`).
+- A Key Vault (`core_kv_id`) only when `enable_customer_managed_key = true`. The [Coalfire-CF/terraform-azurerm-security-core](https://github.com/Coalfire-CF/terraform-azurerm-security-core) module provides one.
 
 ### Resource List
 
-- Resource Groups
-- Azure Monitor
-- Network Watcher
-- Azure Image Gallery
-- Storage Account Blob and Container for terraform remote state lock
-- Storage Account Blobs for
-  - backup
-  - flowlogs
-  - monitor logs
-  - installer files
-  - CloudShell
-  - Terraform remote state
+- Resource groups: network, application, management, key vault, plus any in `additional_resource_groups`
+- Network Watcher (optional, `network_watcher_enabled`)
+- Azure Compute Gallery, with optional image definitions and versions
+- Storage accounts, each through [terraform-azurerm-storage-account](https://github.com/Coalfire-CF/terraform-azurerm-storage-account) v3.0.0 with diagnostics to Log Analytics:
+  - Azure Recovery Services (ARS)
+  - documents
+  - flow logs
+  - installers, with optional file uploads
+  - VM diagnostics
+  - Cloud Shell
 
-## Code Updates
-
-`tstate.tf` Update to the appropriate version and storage accounts, see sample below:
-
-``` hcl
-terraform {
-  required_version = ">= 1.1.7"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.45.0"
-    }
-  }
-  backend "azurerm" {
-    resource_group_name  = "prod-mp-core-rg"
-    storage_account_name = "prodmpsatfstate"
-    container_name       = "tfstatecontainer"
-    environment          = "usgovernment"
-    key                  = "setup.tfstate"
-  }
-}
-```
-
-Update the `remote-data.tf` file to add the setup security state key. Example remote data block: 
-
-``` hcl
-data "terraform_remote_state" "usgv-region-setup" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = "prod-mp-core-rg"
-    storage_account_name = "prodmpsatfstate"
-    container_name       = "tfstatecontainer"
-    environment          = "usgovernment"
-    key                  = "setup.tfstate"
-  }
-}
-```
-
-## Deployment Steps
-
-This module can be called as outlined below.
-
-- Change directory to the `/coalfire-azure-pak/terraform/prod/us-va/region-setup` folder.
-- Run `terraform init` to download modules and create initial local state file.
-- Run `terraform plan` to ensure no errors and validate plan is deploying expected resources.
-- If everything looks correct in the plan output, run `terraform apply`.
+The module has no backend and reads no remote state. The caller owns both.
 
 ## Usage
-
-Include example for how to call the module below with generic variables
 
 ```hcl
 provider "azurerm" {
   features {}
+  environment                     = "usgovernment"
+  resource_provider_registrations = "none"
+  resource_providers_to_register  = ["Microsoft.Compute", "Microsoft.Insights", "Microsoft.Network", "Microsoft.Storage"]
+  storage_use_azuread             = true
 }
 
 module "setup" {
-  source = "github.com/Coalfire-CF/terraform-azurerm-region-setup"
+  source = "git::https://github.com/Coalfire-CF/terraform-azurerm-region-setup?ref=v3.0.0"
 
   location_abbreviation = var.location_abbreviation
   location              = var.location
-  resource_prefix       = local.resource_prefix
+  resource_prefix       = var.resource_prefix
   app_abbreviation      = var.app_abbreviation
   regional_tags         = var.regional_tags
-  global_tags           = merge(var.global_tags, local.global_local_tags)
-  mgmt_rg_name          = "${local.resource_prefix}-management-rg"
-  app_rg_name           = "${local.resource_prefix}-application-rg"
-  key_vault_rg_name     = "${local.resource_prefix}-keyvault-rg"
-  networking_rg_name    = "${local.resource_prefix}-networking-rg"
-  sas_start_date        = "2023-10-06" #Change to today's date
-  sas_end_date          = "2023-11-06" #Change to one month from now
-  ip_for_remote_access  = var.ip_for_remote_access
-  core_kv_id            = data.terraform_remote_state.core.outputs.core_kv_id
-  diag_log_analytics_id = data.terraform_remote_state.core.outputs.core_la_id
-  
+  global_tags           = var.global_tags
+  tags                  = var.tags
+  mgmt_rg_name          = "${var.resource_prefix}-management-rg"
+  app_rg_name           = "${var.resource_prefix}-application-rg"
+  key_vault_rg_name     = "${var.resource_prefix}-keyvault-rg"
+  networking_rg_name    = "${var.resource_prefix}-networking-rg"
+  diag_log_analytics_id = var.diag_log_analytics_id
+
+  private_endpoint_subnet_id = var.private_endpoint_subnet_id
+  blob_private_dns_zone_id   = var.blob_private_dns_zone_id
+  file_private_dns_zone_id   = var.file_private_dns_zone_id
+
   additional_resource_groups = [
-    "${local.resource_prefix}-identity-rg"
+    "${var.resource_prefix}-identity-rg"
   ]
 }
-
 ```
+
+A complete root is in [`examples/default`](examples/default).
+
+## Security defaults
+
+All six storage accounts get these defaults from the storage-account module. The input that loosens each one is named.
+
+| Default | Loosened by |
+| --- | --- |
+| Public network access `Disabled` | `public_network_access = "Enabled"` |
+| Firewall default action `Deny`, trusted Azure services bypass | `ip_for_remote_access`, `sa_subnet_ids` (apply only when public access is Enabled) |
+| Shared Key authorization off | `cloudshell_shared_access_key_enabled` (Cloud Shell account only) |
+| Minimum TLS 1.2, HTTPS only | not configurable |
+| Platform-managed keys plus infrastructure encryption | `enable_customer_managed_key` switches to customer-managed keys |
+| Soft delete for blobs, containers and shares (7 days), point-in-time restore (6 days) | `blob_delete_retention_days`, `container_delete_retention_days`, `share_delete_retention_days` |
+| GRS replication | `storage_replication_type` |
+
+## Private endpoints
+
+Set `private_endpoint_subnet_id` to create a private endpoint on each storage account:
+
+- `blob_private_dns_zone_id`: the `privatelink.blob` zone for the ARS, docs, flow logs, installs and VM diagnostics accounts.
+- `file_private_dns_zone_id`: the `privatelink.file` zone for the Cloud Shell account. Its endpoint targets the `file` subresource.
+
+With `private_endpoint_subnet_id = null` the module creates no endpoints. With public access Disabled, only trusted Azure services can then reach the accounts.
+
+## Customer-managed keys
+
+Off by default. Setting `enable_customer_managed_key = true` needs `core_kv_id`. For each account, either set its `*_cmk_key_name` to an existing key, or leave it null and give the deploying identity key create rights on the vault so the storage module can create one. To reuse a security-core key named `cloudshell-cmk`, set `cloudshell_cmk_key_name = "cloudshell-cmk"`.
+
+## Cloud Shell
+
+Cloud Shell is expected to mount its file share with the storage account key. Shared Key authorization is off by default, so Cloud Shell likely cannot use this account until you set `cloudshell_shared_access_key_enabled = true`. That lets anyone holding an account key bypass Entra ID and RBAC on this account. Leave it off if you do not use Cloud Shell with this account.
 
 ## Optional arguments
 
@@ -115,7 +104,7 @@ This module accepts a number of additional arguments to modify resource deployme
 
 ### Custom resource names
 
-You may optionally supply custom names for all resources created by this module, to support various naming convention requirements: 
+You may optionally supply custom names for all resources created by this module, to support various naming convention requirements:
 
 ```hcl
 module "setup" {
@@ -123,7 +112,7 @@ module "setup" {
   compute_gallery_name           = "computegallery01"
   cloudshell_storageaccount_name = "usgovcloudshellsa"
   ars_storageaccount_name        = "usgovarssa"
-  docs_storageaccount_name       = "usgovdocssa" 
+  docs_storageaccount_name       = "usgovdocssa"
   flowlogs_storageaccount_name   = "usgovflowlogssa"
   installs_storageaccount_name   = "usgovinstallssa"
   vmdiag_storageaccount_name     = "usgovdiagsa"
@@ -150,15 +139,21 @@ module "setup" {
 }
 ```
 
+Uploads use the blob data plane, and Shared Key is off. They need:
+
+- `storage_use_azuread = true` in the caller's azurerm provider block.
+- An Entra role such as `Storage Blob Data Contributor` on the installs account for the identity running Terraform.
+- Network reach from the runner to the blob endpoint. With public access Disabled, that means a private endpoint the runner can resolve and reach.
+
 Terraform will dynamically set the blob name (filename) to the filename of the script provided, e.g. `../shellscripts/linux/arbitrary_script_name.sh` will be appear in Azure as `arbitrary_script_name.sh`
 
-If `file_upload_paths` is defined, `file_upload_urls` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL: 
+If `file_upload_paths` is defined, `file_uploads` outputs a key-value map of all uploads, where the key is the script name (minus file extension) and the value is the blob URL:
 
 ```hcl
 # Example Output
-file_upload_urls = {
-  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_join_ad.sh"
-  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/shellscripts/linux_monitor_agent.sh"
+file_uploads = {
+  "linux_join_ad" = "https://storageaccountname.blob.core.usgovcloudapi.net/uploads/linux_join_ad.sh"
+  "linux_monitor_agent" = "https://storageaccountname.blob.core.usgovcloudapi.net/uploads/linux_monitor_agent.sh"
 }
 ```
 
@@ -190,7 +185,7 @@ Any number of VM image definitions may be bootstapped in the Azure Compute Galle
 }
 ```
 
-If `vm_image_definitions` is defined, the module will output a key-value map of all VM image definitions, where the key is the image name and the value is the image ID: 
+If `vm_image_definitions` is defined, the module will output a key-value map of all VM image definitions, where the key is the image name and the value is the image ID:
 
 ```hcl
 # Example Output
@@ -200,3 +195,14 @@ vm_image_definitions = {
 }
 ```
 
+## Breaking changes in 3.0.0
+
+- Requires Terraform `>= 1.16.6` and azurerm `~> 5.10`.
+- Storage accounts use terraform-azurerm-storage-account v3.0.0. Public network access defaults to `Disabled` and Shared Key is off on all six accounts.
+- `public_network_access_enabled` (bool) is replaced by `public_network_access` (`Disabled` or `Enabled`).
+- `sas_start_date`, `sas_end_date` and the `storage_account_vm_diag_sas` output are removed. Use managed identity and RBAC on `vmdiag_endpoint`.
+- `enable_customer_managed_key` defaults to `false`. `core_kv_id` is optional and required only with CMK.
+- `ip_for_remote_access` is now `list(string)` with default `[]`.
+- The Cloud Shell account is created by the storage module (`module.cloudshell_sa`). It is GRS, has soft delete and point-in-time restore, and no longer reads a `cloudshell-cmk` key or assigns a role on `core_kv_id`.
+- New inputs: `tags`, `storage_replication_type`, `private_endpoint_subnet_id`, `blob_private_dns_zone_id`, `file_private_dns_zone_id`, `cloudshell_shared_access_key_enabled`, `cloudshell_cmk_key_name`, `blob_delete_retention_days`, `container_delete_retention_days`, `share_delete_retention_days`.
+- Resource groups and gallery image definitions now carry tags.

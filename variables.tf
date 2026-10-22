@@ -47,29 +47,29 @@ variable "networking_rg_name" {
   default     = "networking-rg-01"
 }
 
-variable "sas_start_date" {
-  description = "value"
-  type        = string
-}
-
-variable "sas_end_date" {
-  description = "value"
-  type        = string
-}
-
 variable "sa_subnet_ids" {
   type        = list(string)
-  description = "List of subnet ids for access to storage accounts to allow communication."
+  description = "Subnet IDs allowed through the firewall of every storage account (service endpoints). Applies only when public_network_access is Enabled."
   default     = []
+  nullable    = false
 }
 
 variable "ip_for_remote_access" {
-  description = "This is the same as 'cidrs_for_remote_access' but without the /32 on each of the files. The 'ip_rules' in the storage account will not accept a '/32' address and I gave up trying to strip and convert the values over"
-  type        = list(any)
+  description = "Public IPv4 addresses or CIDR ranges allowed through the firewall of every storage account. Applies only when public_network_access is Enabled. Each entry opens the account's public endpoint to that address."
+  type        = list(string)
+  default     = []
+  nullable    = false
 }
 
 variable "core_kv_id" {
-  type = string
+  type        = string
+  description = "Resource ID of the Key Vault that holds or receives the customer-managed keys. Required when enable_customer_managed_key is true; unused otherwise."
+  default     = null
+
+  validation {
+    condition     = !var.enable_customer_managed_key || var.core_kv_id != null
+    error_message = "core_kv_id is required when enable_customer_managed_key is true."
+  }
 }
 
 variable "diag_log_analytics_id" {
@@ -180,11 +180,12 @@ variable "network_watcher_name" {
 
 variable "file_upload_paths" {
   type        = list(string)
-  description = "A list of paths to files which will be uploaded to the installs storage account"
+  description = "Paths of files to upload to the uploads container in the installs storage account. Uploads use the blob data plane: shared keys are off, so the caller's azurerm provider needs storage_use_azuread = true and an Entra role such as Storage Blob Data Contributor on the account, and the runner needs network access to the blob endpoint (a private endpoint when public_network_access is Disabled)."
   default     = []
 }
 
 variable "vm_image_definitions" {
+  description = "Image definitions to create in the compute gallery. An entry with managed_image_id also gets an image version."
   type = list(object({
     name                 = string
     os_type              = string
@@ -204,7 +205,7 @@ variable "vm_image_definitions" {
 
 variable "image_gallery_description" {
   type        = string
-  description = "Description of the Shared Image Gallery to be created]"
+  description = "Description of the Shared Image Gallery to be created"
   default     = "Images for FedRAMP Environment"
 }
 
@@ -220,16 +221,10 @@ variable "architecture" {
   default     = "x64"
 }
 
-variable "public_network_access_enabled" {
-  type        = bool
-  description = "Enable/Disable public network access for the storage account."
-  default     = true
-}
-
 variable "enable_customer_managed_key" {
   type        = bool
-  description = "Enable/Disable Customer Managed Key (CMK) for the storage account."
-  default     = true
+  description = "Encrypt all six storage accounts with customer-managed keys in core_kv_id. When false, platform-managed keys plus infrastructure encryption apply. When true and a *_cmk_key_name is null, the storage module creates a key named <account>-cmk, so the deploying identity needs key create rights on the vault."
+  default     = false
 }
 
 variable "network_watcher_enabled" {
@@ -246,7 +241,7 @@ variable "regional_replica_count" {
 
 variable "storage_account_type" {
   type        = string
-  description = "The type of storage account to use for the Shared Image Gallery. Possible values are Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS"
+  description = "Replica storage type for gallery image versions: Standard_LRS, Standard_ZRS or Premium_LRS. Default Standard_LRS: replicas can be rebuilt from the source managed image. Use Standard_ZRS where the region has availability zones and replica loss would block deployments."
   default     = "Standard_LRS"
 }
 
@@ -279,4 +274,99 @@ variable "vmdiag_cmk_key_name" {
   type        = string
   description = "(Optional) Name of the Key Vault Key to use for Customer Managed Keys in the VM Diagnostic Logs Storage Account"
   default     = null
+}
+
+variable "cloudshell_cmk_key_name" {
+  type        = string
+  description = "(Optional) Name of an existing Key Vault key in core_kv_id for the Cloud Shell account's customer-managed key. Null creates one when enable_customer_managed_key is true."
+  default     = null
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags merged onto every taggable resource, after global_tags and regional_tags."
+  default     = {}
+  nullable    = false
+}
+
+variable "public_network_access" {
+  type        = string
+  description = "Public network access for all six storage accounts: Disabled or Enabled. Enabled exposes the account endpoints to the internet, limited only by ip_for_remote_access and sa_subnet_ids. Keep Disabled and use private_endpoint_subnet_id."
+  default     = "Disabled"
+
+  validation {
+    condition     = contains(["Disabled", "Enabled"], var.public_network_access)
+    error_message = "public_network_access must be Disabled or Enabled."
+  }
+}
+
+variable "storage_replication_type" {
+  type        = string
+  description = "Replication for all six storage accounts: LRS, GRS, RAGRS, ZRS, GZRS or RAGZRS. Default GRS matches the storage-account module and keeps a copy in the paired region. Use ZRS or GZRS where the region has availability zones. LRS keeps one copy in one datacenter."
+  default     = "GRS"
+
+  validation {
+    condition     = contains(["LRS", "GRS", "RAGRS", "ZRS", "GZRS", "RAGZRS"], var.storage_replication_type)
+    error_message = "storage_replication_type must be one of LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS."
+  }
+}
+
+variable "private_endpoint_subnet_id" {
+  type        = string
+  description = "Subnet ID for a private endpoint on each of the six storage accounts. Null creates no private endpoints; with public_network_access Disabled the accounts are then reachable only by trusted Azure services."
+  default     = null
+}
+
+variable "blob_private_dns_zone_id" {
+  type        = string
+  description = "ID of the privatelink.blob private DNS zone linked to the blob private endpoints of the ars, docs, flowlogs, installs and vm_diag accounts. Null skips the DNS zone group."
+  default     = null
+}
+
+variable "file_private_dns_zone_id" {
+  type        = string
+  description = "ID of the privatelink.file private DNS zone linked to the Cloud Shell account's file private endpoint. Null skips the DNS zone group."
+  default     = null
+}
+
+variable "cloudshell_shared_access_key_enabled" {
+  type        = bool
+  description = "Allow Shared Key authorization on the Cloud Shell storage account. Cloud Shell is expected to mount its file share with the account key, so Cloud Shell likely cannot use this account while false. True lets anyone holding a key bypass Entra ID and RBAC on this account."
+  default     = false
+}
+
+variable "blob_delete_retention_days" {
+  type        = number
+  description = "Days deleted blobs are kept on all six storage accounts. Point-in-time restore keeps 6 days, so this must be at least 7. Lower values shorten the recovery window."
+  default     = 7
+  nullable    = false
+
+  validation {
+    condition     = var.blob_delete_retention_days >= 7 && var.blob_delete_retention_days <= 365
+    error_message = "blob_delete_retention_days must be between 7 and 365."
+  }
+}
+
+variable "container_delete_retention_days" {
+  type        = number
+  description = "Days deleted containers are kept on all six storage accounts. Lower values shorten the recovery window."
+  default     = 7
+  nullable    = false
+
+  validation {
+    condition     = var.container_delete_retention_days >= 1 && var.container_delete_retention_days <= 365
+    error_message = "container_delete_retention_days must be between 1 and 365."
+  }
+}
+
+variable "share_delete_retention_days" {
+  type        = number
+  description = "Days deleted file shares are kept on all six storage accounts, including the Cloud Shell share. Lower values shorten the recovery window."
+  default     = 7
+  nullable    = false
+
+  validation {
+    condition     = var.share_delete_retention_days >= 1 && var.share_delete_retention_days <= 365
+    error_message = "share_delete_retention_days must be between 1 and 365."
+  }
 }

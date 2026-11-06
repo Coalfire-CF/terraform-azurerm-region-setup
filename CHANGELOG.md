@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v3.0.0...v3.0.1) (2026-11-06)
+
+
+### Documentation
+
+* wrap Markdown lines at 120 characters (Coalfire-CF/Actions[#375](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/375)) ([#190](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/issues/190)) ([2d29403](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/commit/2d29403b0b48289d2d4c25deb5e4c0694f5e9a4e))
+
 ## [3.0.0](https://github.com/Coalfire-CF/terraform-azurerm-region-setup/compare/v2.0.1...v3.0.0) (2026-10-22)
 
 

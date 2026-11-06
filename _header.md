@@ -103,8 +103,8 @@ Azure services can then reach the accounts.
 
 Off by default. Setting `enable_customer_managed_key = true` needs `core_kv_id`. For each account, either set its
 `*_cmk_key_name` to an existing key, or leave it null and give the deploying identity key create rights on the vault so
-the storage module can create one. To reuse a security-core key named `cloudshell-cmk`, set `cloudshell_cmk_key_name =
-"cloudshell-cmk"`.
+the storage module can create one. To reuse a security-core key named `cloudshell-cmk`, set
+`cloudshell_cmk_key_name = "cloudshell-cmk"`.
 
 ## Cloud Shell
 
